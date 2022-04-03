@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:auth_flutter/api/api.dart';
+import 'package:auth_flutter/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,7 +40,7 @@ class _DashboardState extends State<Dashboard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Hello, $name',
+              'Hello',
               style: TextStyle(
                 color: Colors.teal,
                 fontSize: 15.0,
@@ -71,5 +73,18 @@ class _DashboardState extends State<Dashboard> {
         ),
       ),
     );
+  }
+
+  void logout() async{
+    var res = await Network().getData('/logout');
+    var body = json.decode(res.body);
+    if(body['success']){
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
+      localStorage.remove('user');
+      localStorage.remove('token');
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context)=> Login()));
+    }
   }
 }

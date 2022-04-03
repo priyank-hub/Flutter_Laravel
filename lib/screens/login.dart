@@ -107,7 +107,7 @@ class _LoginState extends State<Login> {
                                           password = value;
                                         },
                                         validator: (String? value) {
-                                          return (value!.length > 8) ? null : "Password must contain 8 characters";
+                                          return (value!.length > 8) ? null : "Password must contain atleast 8 characters";
                                         },
                                       ),
 
@@ -182,8 +182,6 @@ class _LoginState extends State<Login> {
       _isLoading = true;
     });
 
-//    if (_formKey.currentState!.validate()) {
-//    }
     _formKey.currentState!.validate();
     _formKey.currentState!.save();
 

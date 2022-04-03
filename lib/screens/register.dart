@@ -1,6 +1,12 @@
+import 'dart:convert';
+
+import 'package:auth_flutter/api/api.dart';
+import 'package:auth_flutter/screens/dashboard.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
+import 'package:email_validator/email_validator.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -8,6 +14,12 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
+  bool _isLoading = false;
+  var name, email, phone, password;
+
+  final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -31,6 +43,7 @@ class _RegisterState extends State<Register> {
                       child: Padding(
                         padding: EdgeInsets.all(10.0),
                         child: Form(
+                          key: _formKey,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -50,6 +63,13 @@ class _RegisterState extends State<Register> {
                                       fontWeight: FontWeight.normal
                                   ),
                                 ),
+
+                                onSaved: (String? value) {
+                                  name = value;
+                                },
+                                validator: (String? value) {
+                                  return (value!.length != 0) ? null : "Name cannot be empty";
+                                },
                               ),
 
                               TextFormField(
@@ -68,6 +88,13 @@ class _RegisterState extends State<Register> {
                                       fontWeight: FontWeight.normal
                                   ),
                                 ),
+
+                                onSaved: (String? value) {
+                                  email = value;
+                                },
+                                validator: (String? value) {
+                                  return EmailValidator.validate(value) ? null : "Please enter a valid email";
+                                },
                               ),
 
                               TextFormField(
@@ -86,6 +113,13 @@ class _RegisterState extends State<Register> {
                                       fontWeight: FontWeight.normal
                                   ),
                                 ),
+
+                                onSaved: (String? value) {
+                                  phone = value;
+                                },
+                                validator: (String? value) {
+                                  return (value!.length != 0) ? null : "Phone number cannot be empty";
+                                },
                               ),
 
                               TextFormField(
@@ -104,6 +138,13 @@ class _RegisterState extends State<Register> {
                                       fontWeight: FontWeight.normal
                                   ),
                                 ),
+
+                                onSaved: (String? value) {
+                                  password = value;
+                                },
+                                validator: (String? value) {
+                                  return (value!.length > 0) ? null : "Password must contain atleast 8 characters";
+                                },
                               ),
 
 
@@ -114,7 +155,7 @@ class _RegisterState extends State<Register> {
                                     padding: EdgeInsets.only(
                                         top: 8, bottom: 8, left: 10, right: 10),
                                     child: Text(
-                                      'Register',
+                                      _isLoading? 'Proccessing...' : 'Register',
                                       textDirection: TextDirection.ltr,
                                       style: TextStyle(
                                         color: Colors.white,
@@ -130,7 +171,7 @@ class _RegisterState extends State<Register> {
                                       borderRadius:
                                       new BorderRadius.circular(10.0)),
                                   onPressed: () {
-
+                                    _register();
                                   },
                                 ),
                               ),
@@ -170,6 +211,41 @@ class _RegisterState extends State<Register> {
         ),
       ),
     );
+  }
+
+  void _register()async{
+    setState(() {
+      _isLoading = true;
+    });
+
+    _formKey.currentState!.validate();
+    _formKey.currentState!.save();
+
+    var data = {
+      'name': name,
+      'email' : email,
+      'password': password,
+      'phone': phone,
+    };
+
+    var res = await Network().authData(data, '/register');
+    var body = json.decode(res.body);
+    print(body);
+    if(body['success']){
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
+      localStorage.setString('token', json.encode(body['token']));
+      localStorage.setString('user', json.encode(body['user']));
+      Navigator.push(
+        context,
+        new MaterialPageRoute(
+            builder: (context) => Dashboard()
+        ),
+      );
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
 }
