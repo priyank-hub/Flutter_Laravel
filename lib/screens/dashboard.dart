@@ -180,7 +180,9 @@ class _DashboardState extends State<Dashboard> {
               ),
 
               Padding(
-                padding: EdgeInsets.all(10.0),
+                padding: EdgeInsets.only(
+                  left: 16.0,
+                ),
                 child: Text(
                   'Restaurants',
                   style: GoogleFonts.poppins(
