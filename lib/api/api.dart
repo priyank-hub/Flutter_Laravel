@@ -4,11 +4,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Network {
   final String _url = 'https://my-laravel-auth.herokuapp.com/api';
+  // final String _url = 'http://127.0.0.1:8000/api';
   var token;
 
   _getToken() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    token = jsonDecode(localStorage.getString('token'))['token'];
+    token = jsonDecode(localStorage.getString('token'));
   }
 
   authData(data, apiUrl) async{

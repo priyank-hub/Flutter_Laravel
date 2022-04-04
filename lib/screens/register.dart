@@ -226,11 +226,13 @@ class _RegisterState extends State<Register> {
       'email' : email,
       'password': password,
       'phone': phone,
+      'device_name': 'ios',
     };
 
     var res = await Network().authData(data, '/register');
     var body = json.decode(res.body);
-    print(body);
+    // print(data);
+    // print(body);
     if(body['success']){
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       localStorage.setString('token', json.encode(body['token']));
@@ -241,6 +243,9 @@ class _RegisterState extends State<Register> {
             builder: (context) => Dashboard()
         ),
       );
+    }
+    else {
+
     }
 
     setState(() {

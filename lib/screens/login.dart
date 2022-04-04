@@ -107,7 +107,7 @@ class _LoginState extends State<Login> {
                                           password = value;
                                         },
                                         validator: (String? value) {
-                                          return (value!.length > 8) ? null : "Password must contain atleast 8 characters";
+                                          return (value!.length > 7) ? null : "Password must contain atleast 8 characters";
                                         },
                                       ),
 
@@ -191,10 +191,9 @@ class _LoginState extends State<Login> {
       'device_name': 'ios',
     };
 
-    print(data);
     var res = await Network().authData(data, '/login');
     var body = json.decode(res.body);
-    print(body);
+
     if(body['success']){
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       localStorage.setString('token', json.encode(body['token']));

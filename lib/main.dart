@@ -2,6 +2,7 @@ import 'package:auth_flutter/screens/dashboard.dart';
 import 'package:auth_flutter/screens/login.dart';
 import 'package:auth_flutter/screens/register.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MyApp());
@@ -12,10 +13,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Auth Test',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      debugShowCheckedModeBanner: false,
       home: MyHomePage(),
     );
   }
@@ -31,12 +33,32 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  bool isAuth = false;
+  @override
+  void initState() {
+    _checkIfLoggedIn();
+    super.initState();
+  }
+
+  void _checkIfLoggedIn() async{
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var token = localStorage.getString('token');
+    if(token != null){
+      setState(() {
+        isAuth = true;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     Widget child;
+    if (isAuth) {
+      child = Dashboard();
+    } else {
       child = Login();
-      return Scaffold(
-        body: child,
-      );
+    }
+    return Scaffold(
+      body: child,
+    );
   }
 }
