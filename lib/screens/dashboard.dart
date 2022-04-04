@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:auth_flutter/api/api.dart';
+import 'package:auth_flutter/components/categorycard.dart';
+import 'package:auth_flutter/components/restaurantcard.dart';
 import 'package:auth_flutter/models/category.dart';
 import 'package:auth_flutter/models/restaurant.dart';
 import 'package:auth_flutter/screens/login.dart';
@@ -8,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../models/category.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -44,7 +45,7 @@ class _DashboardState extends State<Dashboard> {
       ),
       Category(
           name: 'Test 2',
-          image: 'assets/images/2.jpeg',
+          image: 'assets/images/2.jpg',
       ),
       Category(
           name: 'Test 3',
@@ -52,31 +53,31 @@ class _DashboardState extends State<Dashboard> {
       ),
       Category(
         name: 'Test 1',
+        image: 'assets/images/4.jpg',
+      ),
+      Category(
+        name: 'Test 2',
+        image: 'assets/images/5.jpg',
+      ),
+      Category(
+        name: 'Test 3',
         image: 'assets/images/1.jpg',
       ),
       Category(
-        name: 'Test 2',
-        image: 'assets/images/2.jpeg',
-      ),
-      Category(
         name: 'Test 3',
-        image: 'assets/images/3.jpg',
-      ),
-      Category(
-        name: 'Test 3',
-        image: 'assets/images/3.jpg',
+        image: 'assets/images/2.jpg',
       ),
       Category(
         name: 'Test 2',
-        image: 'assets/images/2.jpeg',
-      ),
-      Category(
-        name: 'Test 3',
         image: 'assets/images/3.jpg',
       ),
       Category(
         name: 'Test 3',
-        image: 'assets/images/3.jpg',
+        image: 'assets/images/4.jpg',
+      ),
+      Category(
+        name: 'Test 3',
+        image: 'assets/images/5.jpg',
       ),
     ];
 
@@ -87,7 +88,7 @@ class _DashboardState extends State<Dashboard> {
       ),
       Restaurant(
         name: 'Test 2',
-        image: 'assets/images/2.jpeg',
+        image: 'assets/images/2.jpg',
       ),
       Restaurant(
         name: 'Test 3',
@@ -99,7 +100,7 @@ class _DashboardState extends State<Dashboard> {
       ),
       Restaurant(
         name: 'Test 2',
-        image: 'assets/images/2.jpeg',
+        image: 'assets/images/2.jpg',
       ),
       Restaurant(
         name: 'Test 3',
@@ -111,7 +112,7 @@ class _DashboardState extends State<Dashboard> {
       ),
       Restaurant(
         name: 'Test 2',
-        image: 'assets/images/2.jpeg',
+        image: 'assets/images/2.jpg',
       ),
       Restaurant(
         name: 'Test 3',
@@ -163,13 +164,13 @@ class _DashboardState extends State<Dashboard> {
                   itemBuilder: (context, index) {
                     return Opacity(
                       opacity: 0.8,
-                      child: CarouselCard(
+                      child: CategoryCard(
                         category: categories[index],
                       ),
                     );
                   },
                   itemCount: categories.length,
-                  controller: PageController(initialPage: 0, viewportFraction: 0.75),
+                  controller: PageController(initialPage: 0, viewportFraction: 0.50),
                   onPageChanged: (index) {
                     setState(() {
                       currentPage = index;
@@ -227,67 +228,4 @@ class _DashboardState extends State<Dashboard> {
           MaterialPageRoute(builder: (context)=> Login()));
     }
   }
-}
-
-class CarouselCard extends StatelessWidget {
-  CarouselCard({required this.category});
-
-  Category category;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.only(
-          top: 8.0,
-          left: 8.0,
-          right: 8.0,
-        ),
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.7,
-          height: MediaQuery.of(context).size.height * 0.2,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.white54,
-                offset: Offset(0, 20),
-                blurRadius: 10.0,
-              )
-            ],
-
-            image: DecorationImage(
-              image: AssetImage(category.image),
-              fit: BoxFit.cover,
-            ),
-          ),
-
-          child: Column(
-
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class RestaurantCard extends StatelessWidget {
-
-  RestaurantCard({required this.restaurant});
-  Restaurant restaurant;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(4.0),
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        child: Text(
-            restaurant.name
-        ),
-        color: Colors.teal[100],
-      ),
-    );
-  }
-
 }
