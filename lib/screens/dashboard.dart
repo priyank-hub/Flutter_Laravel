@@ -6,6 +6,7 @@ import 'package:auth_flutter/components/restaurantcard.dart';
 import 'package:auth_flutter/models/category.dart';
 import 'package:auth_flutter/models/restaurant.dart';
 import 'package:auth_flutter/screens/login.dart';
+import 'package:auth_flutter/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -146,6 +147,22 @@ class _DashboardState extends State<Dashboard> {
         backgroundColor: Color(0xffae4ad9),
         elevation: 10,
         actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.person,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      type: PageTransitionType.rightToLeft,
+                      child: Profile(),
+                  )
+              );
+            },
+          ),
+
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert),
             onSelected: (String result) {
@@ -173,7 +190,7 @@ class _DashboardState extends State<Dashboard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.3,
+                height: MediaQuery.of(context).size.height * 0.25,
                 width: double.infinity,
                 child: PageView.builder(
                   itemBuilder: (context, index) {
@@ -185,7 +202,7 @@ class _DashboardState extends State<Dashboard> {
                     );
                   },
                   itemCount: categories.length,
-                  controller: PageController(initialPage: 0, viewportFraction: 0.35),
+                  controller: PageController(initialPage: 0, viewportFraction: 0.40),
                   onPageChanged: (index) {
                     setState(() {
                       currentPage = index;
@@ -207,43 +224,40 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
 
-              Padding(
-                padding: EdgeInsets.all(10.0),
-                child: GridView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  primary: false,
-                  padding: const EdgeInsets.all(1),
+              GridView.builder(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                primary: false,
+                padding: const EdgeInsets.all(1),
 
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2
-                  ),
-                  itemBuilder: (context, index) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0)
-                      ),
-                      elevation: 0.0,
-                      color: Color(0xffd78df7),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            PageTransition(
-                                type: PageTransitionType.rightToLeft,
-                                child: Menu(
-                                  restaurant: restaurants[index],
-                                )
-                            )
-                        );
-                      },
-                      child: RestaurantCard(
-                        restaurant: restaurants[index],
-                      ),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2
+                ),
+                itemBuilder: (context, index) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0)
+                    ),
+                    elevation: 0.0,
+                    color: Color(0xffd78df7),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                              type: PageTransitionType.rightToLeft,
+                              child: Menu(
+                                restaurant: restaurants[index],
+                              )
+                          )
+                      );
+                    },
+                    child: RestaurantCard(
+                      restaurant: restaurants[index],
                     ),
                   ),
-                  itemCount: restaurants.length,
                 ),
+                itemCount: restaurants.length,
               )
             ],
           ),
