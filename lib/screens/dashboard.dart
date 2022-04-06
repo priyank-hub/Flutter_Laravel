@@ -7,8 +7,11 @@ import 'package:auth_flutter/models/category.dart';
 import 'package:auth_flutter/models/restaurant.dart';
 import 'package:auth_flutter/screens/login.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'menu.dart';
 
 
 class Dashboard extends StatefulWidget {
@@ -41,43 +44,55 @@ class _DashboardState extends State<Dashboard> {
     var categories = [
       Category(
           name: 'Test 1',
-          image: 'assets/images/1.jpg',
+          image: 'assets/images/bbq-01.png',
       ),
       Category(
           name: 'Test 2',
-          image: 'assets/images/2.jpg',
+          image: 'assets/images/breakfast-01.png',
       ),
       Category(
           name: 'Test 3',
-          image: 'assets/images/3.jpg',
+          image: 'assets/images/burgers-01.png',
       ),
       Category(
         name: 'Test 1',
-        image: 'assets/images/4.jpg',
+        image: 'assets/images/cafe-01.png',
       ),
       Category(
         name: 'Test 2',
-        image: 'assets/images/5.jpg',
+        image: 'assets/images/carribean-01.png',
       ),
       Category(
         name: 'Test 3',
-        image: 'assets/images/1.jpg',
+        image: 'assets/images/chinese-01.png',
       ),
       Category(
         name: 'Test 3',
-        image: 'assets/images/2.jpg',
+        image: 'assets/images/desserts-01.png',
       ),
       Category(
         name: 'Test 2',
-        image: 'assets/images/3.jpg',
+        image: 'assets/images/fastfood-01.png',
       ),
       Category(
         name: 'Test 3',
-        image: 'assets/images/4.jpg',
+        image: 'assets/images/healthy-01.png',
       ),
       Category(
         name: 'Test 3',
-        image: 'assets/images/5.jpg',
+        image: 'assets/images/japanese-01.png',
+      ),
+      Category(
+        name: 'Test 3',
+        image: 'assets/images/kosher-01.png',
+      ),
+      Category(
+        name: 'Test 3',
+        image: 'assets/images/vegetarian-01.png',
+      ),
+      Category(
+        name: 'Test 3',
+        image: 'assets/images/vietnamese-01.png',
       ),
     ];
 
@@ -128,8 +143,8 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Dashboard'),
-        backgroundColor: Colors.teal,
-        elevation: 0,
+        backgroundColor: Color(0xffae4ad9),
+        elevation: 10,
         actions: <Widget>[
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert),
@@ -170,7 +185,7 @@ class _DashboardState extends State<Dashboard> {
                     );
                   },
                   itemCount: categories.length,
-                  controller: PageController(initialPage: 0, viewportFraction: 0.50),
+                  controller: PageController(initialPage: 0, viewportFraction: 0.35),
                   onPageChanged: (index) {
                     setState(() {
                       currentPage = index;
@@ -203,8 +218,29 @@ class _DashboardState extends State<Dashboard> {
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2
                   ),
-                  itemBuilder: (context, index) => RestaurantCard(
-                    restaurant: restaurants[index],
+                  itemBuilder: (context, index) => Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RaisedButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0)
+                      ),
+                      elevation: 0.0,
+                      color: Color(0xffd78df7),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: Menu(
+                                  restaurant: restaurants[index],
+                                )
+                            )
+                        );
+                      },
+                      child: RestaurantCard(
+                        restaurant: restaurants[index],
+                      ),
+                    ),
                   ),
                   itemCount: restaurants.length,
                 ),

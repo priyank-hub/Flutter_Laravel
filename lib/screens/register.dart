@@ -24,7 +24,7 @@ class _RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     return Material(
       child: Container(
-        color: Colors.teal,
+        color: Color(0xffae4ad9),
         child: Stack(
           children: [
             Positioned(
@@ -165,7 +165,7 @@ class _RegisterState extends State<Register> {
                                       ),
                                     ),
                                   ),
-                                  color: Colors.teal,
+                                  color: Color(0xffae4ad9),
                                   disabledColor: Colors.grey,
                                   shape: new RoundedRectangleBorder(
                                       borderRadius:

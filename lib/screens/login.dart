@@ -39,7 +39,7 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-          color: Colors.teal,
+          color: Color(0xffae4ad9),
           child: Stack(
               children: <Widget>[
                 Positioned(
@@ -128,7 +128,7 @@ class _LoginState extends State<Login> {
                                               ),
                                             ),
                                           ),
-                                          color: Colors.teal,
+                                          color: Color(0xffae4ad9),
                                           disabledColor: Colors.grey,
                                           shape: new RoundedRectangleBorder(
                                               borderRadius:

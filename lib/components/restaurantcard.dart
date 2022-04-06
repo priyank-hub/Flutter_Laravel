@@ -11,30 +11,13 @@ class RestaurantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        elevation: 0.0,
-        color: Colors.teal[100],
-        onPressed: () {
-          Navigator.push(
-            context,
-            new MaterialPageRoute(
-                builder: (context) => Menu()
-            ),
-          );
-        },
-        child: Center(
-          child: Text(
-            restaurant.name,
-            style: GoogleFonts.poppins(
-              fontSize: 15,
-              fontWeight: FontWeight.normal,
-            ),
-          ),
+    return Center(
+      child: Text(
+        restaurant.name,
+        style: GoogleFonts.poppins(
+          fontSize: 15,
+          fontWeight: FontWeight.normal,
+          color: Colors.white,
         ),
       ),
     );
