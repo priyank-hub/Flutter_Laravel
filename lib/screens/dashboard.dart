@@ -27,7 +27,7 @@ class _DashboardState extends State<Dashboard> {
 
   void initState() {
     _loadUserData();
-    _getRestaurants();
+    // _getRestaurants();
     super.initState();
   }
 
@@ -42,21 +42,21 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  _getRestaurants() async {
-    print('getting restaurants...');
-    var res = await Network().getDataWithoutToken('/restaurants');
-    var body = json.decode(res.body);
-    for (var restaurant in body['restaurants']['data']) {
-      restaurants.add(
-        Restaurant(
-          id: restaurant['id'],
-          name: restaurant['name'],
-          image: restaurant['image'],
-        ),
-      );
-      // print(restaurant);
-    }
-  }
+  // _getRestaurants() async {
+  //   print('getting restaurants...');
+  //   var res = await Network().getDataWithoutToken('/restaurants');
+  //   var body = json.decode(res.body);
+  //   for (var restaurant in body['restaurants']['data']) {
+  //     restaurants.add(
+  //       Restaurant(
+  //         id: restaurant['id'],
+  //         name: restaurant['name'],
+  //         image: restaurant['image'],
+  //       ),
+  //     );
+  //     // print(restaurant);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -292,45 +292,47 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ),
 
-                GridView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  primary: false,
-                  padding: const EdgeInsets.all(1),
+                _restaurantData(),
 
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2
-                  ),
-                  itemBuilder: (context, index) =>
-                      // Padding(
-                      //   padding: const EdgeInsets.all(8.0),
-                      //   child: RaisedButton(
-                      //     shape: RoundedRectangleBorder(
-                      //         borderRadius: BorderRadius.circular(12.0)
-                      //     ),
-                      //     elevation: 0.0,
-                      //     color: Color(0xff7c4ad9),
-                      //     onPressed: () {
-                      //       Navigator.push(
-                      //           context,
-                      //           PageTransition(
-                      //               type: PageTransitionType.rightToLeft,
-                      //               child: Menu(
-                      //                 restaurant: restaurants[index],
-                      //               )
-                      //           )
-                      //       );
-                      //     },
-                      //     child: RestaurantCard(
-                      //       restaurant: restaurants[index],
-                      //     ),
-                      //   ),
-                      // ),
-                    RestaurantCard(
-                    restaurant: restaurants[index],
-                  ),
-                  itemCount: restaurants.length,
-                )
+                // GridView.builder(
+                //   scrollDirection: Axis.vertical,
+                //   shrinkWrap: true,
+                //   primary: false,
+                //   padding: const EdgeInsets.all(1),
+                //
+                //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                //       crossAxisCount: 2
+                //   ),
+                //   itemBuilder: (context, index) =>
+                //       // Padding(
+                //       //   padding: const EdgeInsets.all(8.0),
+                //       //   child: RaisedButton(
+                //       //     shape: RoundedRectangleBorder(
+                //       //         borderRadius: BorderRadius.circular(12.0)
+                //       //     ),
+                //       //     elevation: 0.0,
+                //       //     color: Color(0xff7c4ad9),
+                //       //     onPressed: () {
+                //       //       Navigator.push(
+                //       //           context,
+                //       //           PageTransition(
+                //       //               type: PageTransitionType.rightToLeft,
+                //       //               child: Menu(
+                //       //                 restaurant: restaurants[index],
+                //       //               )
+                //       //           )
+                //       //       );
+                //       //     },
+                //       //     child: RestaurantCard(
+                //       //       restaurant: restaurants[index],
+                //       //     ),
+                //       //   ),
+                //       // ),
+                //     RestaurantCard(
+                //     restaurant: restaurants[index],
+                //   ),
+                //   itemCount: restaurants.length,
+                // )
               ],
             ),
           )
@@ -352,4 +354,55 @@ class _DashboardState extends State<Dashboard> {
       );
     }
   }
+}
+
+FutureBuilder _restaurantData(){
+  return FutureBuilder<List>(
+    future: getRestaurants(),
+    builder: (BuildContext context, AsyncSnapshot<List> snapshot){
+      if (snapshot.hasData) {
+        List? data = snapshot.data;
+        return _restaurants(data);
+      } else if (snapshot.hasError) {
+        return Text("${snapshot.error}");
+      }
+      return Center(child: CircularProgressIndicator());
+    },
+  );
+}
+
+Future<List> getRestaurants() async {
+  print('getting restaurants...');
+  List restaurants = [];
+  var res = await Network().getDataWithoutToken('/restaurants');
+  var body = json.decode(res.body);
+  var data = body['restaurants']['data'];
+  for (var restaurant in data) {
+    restaurants.add(
+        Restaurant(
+          id: restaurant['id'],
+          name: restaurant['name'],
+          image: restaurant['image'],
+        )
+    );
+  }
+  return restaurants;
+}
+
+GridView _restaurants(data) {
+  return GridView.builder(
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      primary: false,
+      padding: const EdgeInsets.all(1),
+      itemCount: data.length,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2
+      ),
+      itemBuilder: (context, index) {
+        return RestaurantCard(
+            restaurant: data[index],
+        );
+      }
+  );
 }
