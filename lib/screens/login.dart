@@ -32,14 +32,15 @@ class _LoginState extends State<Login> {
       ),
     );
 
-    _scaffoldKey.currentState?.showSnackBar(snackBar);
+    // _scaffoldKey.currentState?.showSnackBar(snackBar);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-          color: Color(0xffae4ad9),
+          color: Color(0xff7c4ad9),
           child: Stack(
               children: <Widget>[
                 Positioned(
@@ -128,7 +129,7 @@ class _LoginState extends State<Login> {
                                               ),
                                             ),
                                           ),
-                                          color: Color(0xffae4ad9),
+                                          color: Color(0xff7c4ad9),
                                           disabledColor: Colors.grey,
                                           shape: new RoundedRectangleBorder(
                                               borderRadius:
@@ -191,9 +192,9 @@ class _LoginState extends State<Login> {
       'device_name': 'ios',
     };
 
-    var res = await Network().authData(data, '/login');
+    var res = await Network().authData(data, '/userLogin');
     var body = json.decode(res.body);
-
+    // print(body);
     if(body['success']){
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       localStorage.setString('token', json.encode(body['token']));

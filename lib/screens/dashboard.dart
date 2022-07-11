@@ -15,6 +15,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'menu.dart';
 
 
+
 class Dashboard extends StatefulWidget {
   @override
   _DashboardState createState() => _DashboardState();
@@ -22,18 +23,38 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   var name;
-  void initState(){
+  var restaurants = [];
+
+  void initState() {
     _loadUserData();
+    _getRestaurants();
     super.initState();
   }
-  _loadUserData() async{
+
+  _loadUserData() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = jsonDecode(localStorage.getString('user'));
 
-    if(user != null) {
+    if (user != null) {
       setState(() {
         name = user['name'];
       });
+    }
+  }
+
+  _getRestaurants() async {
+    print('getting restaurants...');
+    var res = await Network().getDataWithoutToken('/restaurants');
+    var body = json.decode(res.body);
+    for (var restaurant in body['restaurants']['data']) {
+      restaurants.add(
+        Restaurant(
+          id: restaurant['id'],
+          name: restaurant['name'],
+          image: restaurant['image'],
+        ),
+      );
+      // print(restaurant);
     }
   }
 
@@ -44,16 +65,16 @@ class _DashboardState extends State<Dashboard> {
 
     var categories = [
       Category(
-          name: 'Test 1',
-          image: 'assets/images/bbq-01.png',
+        name: 'Test 1',
+        image: 'assets/images/bbq-01.png',
       ),
       Category(
-          name: 'Test 2',
-          image: 'assets/images/breakfast-01.png',
+        name: 'Test 2',
+        image: 'assets/images/breakfast-01.png',
       ),
       Category(
-          name: 'Test 3',
-          image: 'assets/images/burgers-01.png',
+        name: 'Test 3',
+        image: 'assets/images/burgers-01.png',
       ),
       Category(
         name: 'Test 1',
@@ -97,70 +118,110 @@ class _DashboardState extends State<Dashboard> {
       ),
     ];
 
-    var restaurants = [
-      Restaurant(
-        name: 'Test 11',
-        image: 'assets/images/1.jpg',
-      ),
-      Restaurant(
-        name: 'Test 2',
-        image: 'assets/images/2.jpg',
-      ),
-      Restaurant(
-        name: 'Test 3',
-        image: 'assets/images/3.jpg',
-      ),
-      Restaurant(
-        name: 'Test 1',
-        image: 'assets/images/1.jpg',
-      ),
-      Restaurant(
-        name: 'Test 2',
-        image: 'assets/images/2.jpg',
-      ),
-      Restaurant(
-        name: 'Test 3',
-        image: 'assets/images/3.jpg',
-      ),
-      Restaurant(
-        name: 'Test 3',
-        image: 'assets/images/3.jpg',
-      ),
-      Restaurant(
-        name: 'Test 2',
-        image: 'assets/images/2.jpg',
-      ),
-      Restaurant(
-        name: 'Test 3',
-        image: 'assets/images/3.jpg',
-      ),
-      Restaurant(
-        name: 'Test 3',
-        image: 'assets/images/3.jpg',
-      ),
-    ];
+    // var restaurants = [
+    //   Restaurant(
+    //     name: 'Test 1',
+    //     image: 'assets/images/1.jpg',
+    //   ),
+    //   Restaurant(
+    //     name: 'Test 2',
+    //     image: 'assets/images/2.jpg',
+    //   ),
+    //   Restaurant(
+    //     name: 'Test 3',
+    //     image: 'assets/images/3.jpg',
+    //   ),
+    //   Restaurant(
+    //     name: 'Test 4',
+    //     image: 'assets/images/1.jpg',
+    //   ),
+    //   Restaurant(
+    //     name: 'Test 5',
+    //     image: 'assets/images/2.jpg',
+    //   ),
+    //   Restaurant(
+    //     name: 'Test 6',
+    //     image: 'assets/images/3.jpg',
+    //   ),
+    //   Restaurant(
+    //     name: 'Test 7',
+    //     image: 'assets/images/3.jpg',
+    //   ),
+    //   Restaurant(
+    //     name: 'Test 8',
+    //     image: 'assets/images/2.jpg',
+    //   ),
+    //   Restaurant(
+    //     name: 'Test 9',
+    //     image: 'assets/images/3.jpg',
+    //   ),
+    //   Restaurant(
+    //     name: 'Test 10',
+    //     image: 'assets/images/3.jpg',
+    //   ),
+    // ];
 
+    Icon customIcon = const Icon(Icons.search);
+    Widget customSearchBar = Text('Dashboard');
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dashboard'),
-        backgroundColor: Color(0xffae4ad9),
+        title: customSearchBar,
+        automaticallyImplyLeading: false,
+        backgroundColor: Color(0xff7c4ad9),
         elevation: 10,
         actions: <Widget>[
+          // IconButton(
+          //   icon: Icon(
+          //     Icons.person,
+          //     color: Colors.white,
+          //   ),
+          //   onPressed: () {
+          //     Navigator.push(
+          //         context,
+          //         PageTransition(
+          //             type: PageTransitionType.rightToLeft,
+          //             child: Profile(),
+          //         )
+          //     );
+          //   },
+          // ),
+
           IconButton(
-            icon: Icon(
-              Icons.person,
-              color: Colors.white,
-            ),
             onPressed: () {
-              Navigator.push(
-                  context,
-                  PageTransition(
-                      type: PageTransitionType.rightToLeft,
-                      child: Profile(),
-                  )
-              );
+              setState(() {
+                if (customIcon.icon == Icons.search) {
+                  print('search bar');
+                  customIcon = const Icon(Icons.cancel);
+                  customSearchBar = const ListTile(
+                    leading: Icon(
+                      Icons.search,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                    title: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'search for restaurant...',
+                        hintStyle: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        border: InputBorder.none,
+                      ),
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  );
+                }
+                else {
+                  customIcon = const Icon(Icons.search);
+                  customSearchBar = const Text('Dashboard');
+                }
+              });
             },
+            icon: customIcon,
           ),
 
           PopupMenuButton<String>(
@@ -173,7 +234,8 @@ class _DashboardState extends State<Dashboard> {
                 default:
               }
             },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+            itemBuilder: (BuildContext context) =>
+            <PopupMenuEntry<String>>[
               const PopupMenuItem<String>(
                 value: 'logout',
                 child: Text('Logout'),
@@ -181,103 +243,113 @@ class _DashboardState extends State<Dashboard> {
             ],
           ),
         ],
+        centerTitle: true,
       ),
 
       body: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: SingleChildScrollView (
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.25,
-                width: double.infinity,
-                child: PageView.builder(
-                  itemBuilder: (context, index) {
-                    return Opacity(
-                      opacity: 0.8,
-                      child: CategoryCard(
-                        category: categories[index],
-                      ),
-                    );
-                  },
-                  itemCount: categories.length,
-                  controller: PageController(initialPage: 0, viewportFraction: 0.40),
-                  onPageChanged: (index) {
-                    setState(() {
-                      currentPage = index;
-                    });
-                  },
-                ),
-              ),
-
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 16.0,
-                ),
-                child: Text(
-                  'Restaurants',
-                  style: GoogleFonts.poppins(
-                    fontSize: 23,
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
-              ),
-
-              GridView.builder(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                primary: false,
-                padding: const EdgeInsets.all(1),
-
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2
-                ),
-                itemBuilder: (context, index) => Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: RaisedButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0)
-                    ),
-                    elevation: 0.0,
-                    color: Color(0xffd78df7),
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          PageTransition(
-                              type: PageTransitionType.rightToLeft,
-                              child: Menu(
-                                restaurant: restaurants[index],
-                              )
-                          )
+          padding: EdgeInsets.all(8.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * 0.25,
+                  width: double.infinity,
+                  child: PageView.builder(
+                    itemBuilder: (context, index) {
+                      return Opacity(
+                        opacity: 0.8,
+                        child: CategoryCard(
+                          category: categories[index],
+                        ),
                       );
                     },
-                    child: RestaurantCard(
-                      restaurant: restaurants[index],
+                    itemCount: categories.length,
+                    controller: PageController(
+                        initialPage: 1, viewportFraction: 0.40),
+                    onPageChanged: (index) {
+                      setState(() {
+                        currentPage = index;
+                      });
+                    },
+                  ),
+                ),
+
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 10.0,
+                    bottom: 15.0,
+                  ),
+                  child: Text(
+                    'Restaurants',
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                itemCount: restaurants.length,
-              )
-            ],
-          ),
-        )
+
+                GridView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  primary: false,
+                  padding: const EdgeInsets.all(1),
+
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2
+                  ),
+                  itemBuilder: (context, index) =>
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: RaisedButton(
+                      //     shape: RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(12.0)
+                      //     ),
+                      //     elevation: 0.0,
+                      //     color: Color(0xff7c4ad9),
+                      //     onPressed: () {
+                      //       Navigator.push(
+                      //           context,
+                      //           PageTransition(
+                      //               type: PageTransitionType.rightToLeft,
+                      //               child: Menu(
+                      //                 restaurant: restaurants[index],
+                      //               )
+                      //           )
+                      //       );
+                      //     },
+                      //     child: RestaurantCard(
+                      //       restaurant: restaurants[index],
+                      //     ),
+                      //   ),
+                      // ),
+                    RestaurantCard(
+                    restaurant: restaurants[index],
+                  ),
+                  itemCount: restaurants.length,
+                )
+              ],
+            ),
+          )
 
       ),
     );
   }
 
-  void _logout() async{
-    print('logging out...');
-    var res = await Network().getData('/logout');
+  void _logout() async {
+    var res = await Network().getData('/userLogout');
     var body = json.decode(res.body);
-    if(body['success']){
+    if (body['success']) {
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       localStorage.remove('user');
       localStorage.remove('token');
       Navigator.push(
           context,
-          MaterialPageRoute(builder: (context)=> Login()));
+          MaterialPageRoute(builder: (context) => Login())
+      );
     }
   }
 }

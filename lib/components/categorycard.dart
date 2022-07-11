@@ -23,7 +23,7 @@ class CategoryCard extends StatelessWidget {
               child: Image(
                 image: AssetImage(category.image),
                 fit: BoxFit.cover,
-                height: 120.0,
+                height: 100.0,
               ),
             ),
 
