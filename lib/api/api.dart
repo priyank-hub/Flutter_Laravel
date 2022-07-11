@@ -4,7 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Network {
   // final String _url = 'https://my-laravel-auth.herokuapp.com/api';
-  final String _url = 'https://tali-express.com/api';
+  final String _url = 'https://app.taliuptesting.com/api';
+  // final String _url = 'https://tali-express.com/api';
   // final String _url = 'https://taliuptesting.com/api';
   var token;
 
@@ -48,7 +49,7 @@ class Network {
   _setHeadersWithoutToken() => {
     'Content-type' : 'application/json',
     'Accept' : 'application/json',
-    'Access-Control-Allow-Origin' : 'http://tali-express.com',
+    'Access-Control-Allow-Origin' : 'http://taliup-express.test',
     'Access-Control-Allow-Methods' : 'POST, GET, OPTIONS, DELETE',
   };
 

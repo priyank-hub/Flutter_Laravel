@@ -3,6 +3,9 @@
 import 'dart:convert';
 
 import 'package:auth_flutter/api/api.dart';
+import 'package:auth_flutter/components/menuCategoryCard.dart';
+import 'package:auth_flutter/models/categoryItem.dart';
+import 'package:auth_flutter/models/menuCategory.dart';
 import 'package:auth_flutter/models/restaurant.dart';
 import 'package:auth_flutter/models/menuModel.dart';
 import 'package:flutter/cupertino.dart';
@@ -36,22 +39,6 @@ class _MenuState extends State<Menu> {
     this.res_name = restaurant.name;
     this.res_id = restaurant.id;
   }
-
-  // _getRestaurantMenu() async {
-  //   print('getting menus...');
-  //   var res = await Network().getDataWithoutToken('/restaurants/$res_id/menu');
-  //   var body = json.decode(res.body);
-  //   var data = body['data'][0];
-  //
-  //   this.menu = MenuModel(
-  //       id: data['id'],
-  //       name: data['name'],
-  //       startsAt: data['startsAt'],
-  //       endsAt: data['endsAt'],
-  //       isAvailable: data['isAvailable'],
-  //       // categories: data['categories']
-  //     );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +95,12 @@ FutureBuilder _menuData(id){
     builder: (BuildContext context, AsyncSnapshot<List<MenuModel>> snapshot){
       if (snapshot.hasData) {
         List<MenuModel>? data = snapshot.data;
-        return _menus(data);
+        if ((data!.length > 0) && (data[0].id != null)) {
+          return _menus(data);
+        }
+        else {
+          return _categories(data[0].categories);
+        }
       } else if (snapshot.hasError) {
         return Text("${snapshot.error}");
       }
@@ -120,24 +112,109 @@ FutureBuilder _menuData(id){
 Future<List<MenuModel>> getMenus(id) async {
   print('getting menus...');
   List<MenuModel> menus = [];
-  var res = await Network().getDataWithoutToken('/restaurants/$id/menus');
+  var res = await Network().getDataWithoutToken('/restaurants/$id/menu');
   var body = json.decode(res.body);
-  var data = body['data'];
 
-  for (var menu in data) {
-    menus.add(
+  // Menus present
+  if (body['success']) {
+    var data = body['result'];
+    for (var menu in data) {
+      var categories = menu['categories'];
+      List<MenuCategory> menuCategory = [];
+
+      for (var category in categories) {
+        var items = category['items'];
+        List<CategoryItem> categoryItems = [];
+
+        for (var item in items) {
+          categoryItems.add(
+            CategoryItem(
+              id: item['id'],
+              restaurantId: item['restaurant_id'],
+              categoryId: item['category_id'],
+              name: item['name'],
+              description: item['description'],
+              price: item['price'],
+              soldOut: item['soldout'],
+              position: item['position']
+            ),
+          );
+        }
+
+        menuCategory.add(
+          MenuCategory(
+            id: category['id'],
+            restaurantId: category['restaurant_id'],
+            name: category['name'],
+            position: category['position'],
+            items: categoryItems,
+          ),
+        );
+      }
+
+      menus.add(
           MenuModel(
             id: menu['id'],
             name: menu['name'],
             startsAt: menu['startsAt'],
             endsAt: menu['endsAt'],
             isAvailable: menu['isAvailable'],
-            // categories: data['categories']
+            categories: menuCategory,
           )
       );
+    }
+    return menus;
   }
 
-  return menus;
+  // No menus present
+  else {
+    var data = body['result'][0];
+
+    var categories = data['categories'];
+    List<MenuCategory> menuCategory = [];
+
+    for (var category in categories) {
+      var items = category['items'];
+      List<CategoryItem> categoryItems = [];
+
+      for (var item in items) {
+        categoryItems.add(
+          CategoryItem(
+              id: item['id'],
+              restaurantId: item['restaurant_id'],
+              categoryId: item['category_id'],
+              name: item['name'],
+              description: item['description'],
+              price: item['price'],
+              soldOut: item['soldout'],
+              position: item['position']
+          ),
+        );
+      }
+
+      menuCategory.add(
+        MenuCategory(
+          id: category['id'],
+          restaurantId: category['restaurant_id'],
+          name: category['name'],
+          position: category['position'],
+          items: categoryItems,
+        ),
+      );
+    }
+
+    menus.add(
+        MenuModel(
+          id: null,
+          name: null,
+          startsAt: null,
+          endsAt: null,
+          isAvailable: null,
+          categories: menuCategory,
+        ),
+    );
+    return menus;
+  }
 }
 
 ListView _menus(data) {
@@ -145,7 +222,43 @@ ListView _menus(data) {
       itemCount: data.length,
       itemBuilder: (context, index) {
         return Card(
-            child: _tile(data[index].name, Icons.work)
+          child: Column(
+            children: [
+              _tile(data[index].name, Icons.dining),
+
+              GridView.builder(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                primary: false,
+                padding: const EdgeInsets.all(1),
+
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2
+                ),
+                itemBuilder: (context, index2) =>
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0)
+                    ),
+                    elevation: 0.0,
+                    color: Color(0xffd2d2d2),
+                    onPressed: () {
+                      print(data[index].categories[index2].items);
+                    },
+                    child: Center(
+                      child: MenuCategoryCard(
+                        menuCategory: data[index].categories[index2],
+                      ),
+                    )
+                  ),
+                ),
+                itemCount: data[index].categories.length,
+              ),
+            ],
+          ),
+            // child: _tile(data[index].name, data[index].categories, Icons.work)
         );
       }
   );
@@ -162,5 +275,54 @@ ListTile _tile(String name, IconData icon) {
       icon,
       color: Colors.blue[500],
     ),
+  );
+}
+
+ListView _categories(data) {
+  return ListView.builder(
+      itemCount: data.length,
+      itemBuilder: (context, index) {
+        return Card(
+          child: Column(
+            children: [
+              _tile(data[index].name, Icons.dining),
+
+              GridView.builder(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                primary: false,
+                padding: const EdgeInsets.all(1),
+
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3
+                ),
+                itemBuilder: (context, index2) =>
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: RaisedButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0)
+                          ),
+                          elevation: 0.0,
+                          color: Color(0xffd2d2d2),
+                          onPressed: () {
+
+                          },
+                          child: Center(
+                            child: Center(
+                              child: Text(
+                                data[index].items[index2].name,
+                              ),
+                            )
+                          )
+                      ),
+                    ),
+                itemCount: data[index].items.length,
+              ),
+            ],
+          ),
+          // child: _tile(data[index].name, data[index].categories, Icons.work)
+        );
+      }
   );
 }
