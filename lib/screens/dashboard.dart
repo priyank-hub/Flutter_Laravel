@@ -118,49 +118,6 @@ class _DashboardState extends State<Dashboard> {
       ),
     ];
 
-    // var restaurants = [
-    //   Restaurant(
-    //     name: 'Test 1',
-    //     image: 'assets/images/1.jpg',
-    //   ),
-    //   Restaurant(
-    //     name: 'Test 2',
-    //     image: 'assets/images/2.jpg',
-    //   ),
-    //   Restaurant(
-    //     name: 'Test 3',
-    //     image: 'assets/images/3.jpg',
-    //   ),
-    //   Restaurant(
-    //     name: 'Test 4',
-    //     image: 'assets/images/1.jpg',
-    //   ),
-    //   Restaurant(
-    //     name: 'Test 5',
-    //     image: 'assets/images/2.jpg',
-    //   ),
-    //   Restaurant(
-    //     name: 'Test 6',
-    //     image: 'assets/images/3.jpg',
-    //   ),
-    //   Restaurant(
-    //     name: 'Test 7',
-    //     image: 'assets/images/3.jpg',
-    //   ),
-    //   Restaurant(
-    //     name: 'Test 8',
-    //     image: 'assets/images/2.jpg',
-    //   ),
-    //   Restaurant(
-    //     name: 'Test 9',
-    //     image: 'assets/images/3.jpg',
-    //   ),
-    //   Restaurant(
-    //     name: 'Test 10',
-    //     image: 'assets/images/3.jpg',
-    //   ),
-    // ];
-
     Icon customIcon = const Icon(Icons.search);
     Widget customSearchBar = Text('Dashboard');
 

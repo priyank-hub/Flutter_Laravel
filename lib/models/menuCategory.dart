@@ -7,6 +7,7 @@ class MenuCategory {
     required this.name,
     required this.position,
     required this.items,
+    required this.image,
   });
 
   int id;
@@ -14,4 +15,5 @@ class MenuCategory {
   String name;
   int position;
   List<CategoryItem> items;
+  String image;
 }

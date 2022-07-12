@@ -7,7 +7,8 @@ class CategoryItem {
     required this.description,
     required this.price,
     required this.soldOut,
-    required this.position
+    required this.position,
+    required this.image,
   });
 
   int id;
@@ -18,4 +19,5 @@ class CategoryItem {
   String price;
   bool soldOut;
   int position;
+  String image;
 }
