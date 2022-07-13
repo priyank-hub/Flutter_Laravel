@@ -1,3 +1,5 @@
+import 'package:auth_flutter/models/itemOptionCategory.dart';
+
 class CategoryItem {
   CategoryItem({
     required this.id,
@@ -9,6 +11,7 @@ class CategoryItem {
     required this.soldOut,
     required this.position,
     required this.image,
+    required this.optionCategory,
   });
 
   int id;
@@ -20,4 +23,5 @@ class CategoryItem {
   bool soldOut;
   int position;
   String image;
+  List<ItemOptionCategory> optionCategory;
 }

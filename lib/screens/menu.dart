@@ -5,12 +5,16 @@ import 'dart:convert';
 import 'package:auth_flutter/api/api.dart';
 import 'package:auth_flutter/components/menuCategoryCard.dart';
 import 'package:auth_flutter/models/categoryItem.dart';
+import 'package:auth_flutter/models/itemOptionCategory.dart';
 import 'package:auth_flutter/models/menuCategory.dart';
+import 'package:auth_flutter/models/optionCategoryOption.dart';
 import 'package:auth_flutter/models/restaurant.dart';
 import 'package:auth_flutter/models/menuModel.dart';
+import 'package:auth_flutter/screens/menuItem.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -147,20 +151,59 @@ class _MenuState extends State<Menu> {
 
           for (var item in items) {
             var img = 'https://app.taliuptesting.com/images/default-image.png';
+            List<ItemOptionCategory> optionCategories = [];
             if (item['media'] != null) {
               img = item['media']?.length > 0 ?? ('https://app.taliuptesting.com/storage/' + item['media'][0]['id'].toString() + '/' + item['media'][0]['file_name']);
             }
+
+            if (item['option_categories'].length > 0) {
+              for (var option_category in item['option_categories']) {
+                List<OptionCategoryOption> optionCategoryOptions = [];
+                if (option_category['options'].length > 0) {
+                  for (var option in option_category['options']) {
+                    optionCategoryOptions.add(
+                      OptionCategoryOption(
+                        id: option['id'],
+                        optionCategoryId: option['option_category_id'],
+                        name: option['name'],
+                        price: option['price'],
+                        soldout: option['soldout'],
+                        calories: option['calories'],
+                        maximum: option['maximum'],
+                        sides: option['sides'],
+                        position: option['position'],
+                      ),
+                    );
+                  }
+                }
+
+                optionCategories.add(
+                    ItemOptionCategory(
+                      id: option_category['id'],
+                      name: option_category['name'],
+                      isRequired: option_category['isRequired'],
+                      isSingle: option_category['isSingle'],
+                      max: option_category['max'],
+                      position: option_category['position'],
+                      itemId: option_category['item_id'],
+                      options: optionCategoryOptions,
+                    )
+                );
+              }
+            }
+
             categoryItems.add(
               CategoryItem(
-                  id: item['id'],
-                  restaurantId: item['restaurant_id'],
-                  categoryId: item['category_id'],
-                  name: item['name'],
-                  description: (item['description'] != null) ? item['description'] : 'No description given',
-                  price: item['price'],
-                  soldOut: item['soldout'],
-                  position: item['position'],
-                  image: img,
+                id: item['id'],
+                restaurantId: item['restaurant_id'],
+                categoryId: item['category_id'],
+                name: item['name'],
+                description: (item['description'] != null) ? item['description'] : 'No description given',
+                price: item['price'],
+                soldOut: item['soldout'],
+                position: item['position'],
+                image: img,
+                optionCategory: optionCategories,
               ),
             );
           }
@@ -204,20 +247,59 @@ class _MenuState extends State<Menu> {
         List<CategoryItem> categoryItems = [];
 
         for (var item in items) {
+          List<ItemOptionCategory> optionCategories = [];
           var img = item['media']?.length > 0 ? ('https://app.taliuptesting.com/storage/' + item['media'][0]['id'].toString() + '/' + item['media'][0]['file_name'])
                                             : 'https://app.taliuptesting.com/images/default-image.png';
 
+          if (item['option_categories'].length > 0) {
+
+            for (var option_category in item['option_categories']) {
+              List<OptionCategoryOption> optionCategoryOptions = [];
+              if (option_category['options'].length > 0) {
+                for (var option in option_category['options']) {
+                  optionCategoryOptions.add(
+                    OptionCategoryOption(
+                      id: option['id'],
+                      optionCategoryId: option['option_category_id'],
+                      name: option['name'],
+                      price: option['price'],
+                      soldout: option['soldout'],
+                      calories: option['calories'],
+                      maximum: option['maximum'],
+                      sides: option['sides'],
+                      position: option['position'],
+                    ),
+                  );
+                }
+              }
+
+              optionCategories.add(
+                  ItemOptionCategory(
+                    id: option_category['id'],
+                    name: option_category['name'],
+                    isRequired: option_category['isRequired'],
+                    isSingle: option_category['isSingle'],
+                    max: option_category['max'],
+                    position: option_category['position'],
+                    itemId: option_category['item_id'],
+                    options: optionCategoryOptions,
+                  )
+              );
+            }
+          }
+
           categoryItems.add(
             CategoryItem(
-                id: item['id'],
-                restaurantId: item['restaurant_id'],
-                categoryId: item['category_id'],
-                name: item['name'],
-                description: (item['description'] != null) ? item['description'] : 'No description given',
-                price: item['price'],
-                soldOut: item['soldout'],
-                position: item['position'],
-                image: img,
+              id: item['id'],
+              restaurantId: item['restaurant_id'],
+              categoryId: item['category_id'],
+              name: item['name'],
+              description: (item['description'] != null) ? item['description'] : 'No description given',
+              price: item['price'],
+              soldOut: item['soldout'],
+              position: item['position'],
+              image: img,
+              optionCategory: optionCategories,
             ),
           );
         }
@@ -406,40 +488,6 @@ class _MenuState extends State<Menu> {
                         _tile(data[index].name, Icons.dining),
 
                         _items(data[index].items),
-
-                        // GridView.builder(
-                        //   scrollDirection: Axis.vertical,
-                        //   shrinkWrap: true,
-                        //   primary: false,
-                        //   padding: const EdgeInsets.all(1),
-                        //
-                        //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        //       crossAxisCount: 3
-                        //   ),
-                        //   itemBuilder: (context, index2) =>
-                        //       Padding(
-                        //         padding: const EdgeInsets.all(8.0),
-                        //         child: _item(data[index].items[index2]),
-                        //         // child: RaisedButton(
-                        //         //     shape: RoundedRectangleBorder(
-                        //         //         borderRadius: BorderRadius.circular(12.0)
-                        //         //     ),
-                        //         //     elevation: 0.0,
-                        //         //     color: Color(0xffd2d2d2),
-                        //         //     onPressed: () {
-                        //         //
-                        //         //     },
-                        //         //     child: Center(
-                        //         //         child: Center(
-                        //         //           child: Text(
-                        //         //             data[index].items[index2].name,
-                        //         //           ),
-                        //         //         )
-                        //         //     )
-                        //         // ),
-                        //       ),
-                        //   itemCount: data[index].items.length,
-                        // ),
                       ],
                     ),
                     // child: _tile(data[index].name, data[index].categories, Icons.work)
@@ -466,7 +514,7 @@ class _MenuState extends State<Menu> {
       padding: const EdgeInsets.only(left: 0.0, top: 8.0, right: 0.0, bottom: 0.0),
       child: CarouselSlider(
         options: CarouselOptions(
-          height: 140.0,
+          height: 120.0,
           autoPlay: true,
           autoPlayInterval: Duration(seconds: 7),
           autoPlayAnimationDuration: Duration(milliseconds: 800),
@@ -492,6 +540,7 @@ class _MenuState extends State<Menu> {
                     ),
                     child: card,
                     elevation: 0.0,
+                    color: Colors.transparent,
                   ),
                 );
               }
@@ -513,7 +562,7 @@ class _MenuState extends State<Menu> {
             fit: BoxFit.contain,
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 0.0, top: 8.0, right: 0.0, bottom: 0.0),
+            padding: const EdgeInsets.only(left: 0.0, top: 3.0, right: 0.0, bottom: 0.0),
             child: Text(
                 item.name,
                 style: TextStyle(
@@ -542,99 +591,89 @@ class _MenuState extends State<Menu> {
           mainAxisSpacing: 10.0,
       ),
       itemBuilder: (content, index) {
-        return Padding(
-          padding: const EdgeInsets.only(top: 0.0, bottom: 0.0, left: 6.0, right: 6.0),
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5),
-            ),
-            elevation: 0.0,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5), bottomLeft: Radius.circular(0), bottomRight: Radius.circular(0)), //add border radius
-                    child: Image.network(
-                      items[index].image,
-                      fit: BoxFit.cover,
-                      height: 130,
-                      width: MediaQuery.of(context).size.width,
+        return InkWell(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 0.0, bottom: 0.0, left: 6.0, right: 6.0),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              elevation: 0.0,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5), bottomLeft: Radius.circular(0), bottomRight: Radius.circular(0)), //add border radius
+                      child: Image.network(
+                        items[index].image,
+                        fit: BoxFit.cover,
+                        height: 130,
+                        width: MediaQuery.of(context).size.width,
+                      ),
                     ),
                   ),
-                ),
 
-                Flexible(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8.0, top: 5.0, right: 8.0, bottom: 0.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          items[index].name,
-                          style: GoogleFonts.poppins(
-                            fontSize: 13,
-                            fontWeight: FontWeight.normal,
-                            color: Colors.black,
-                          ),
-                        ),
-
-                        Text(
-                          items[index].description,
-                          style: GoogleFonts.poppins(
-                            fontSize: 11,
-                            fontWeight: FontWeight.normal,
-                            color: Colors.black26,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-
-                        Padding(
-                          padding: EdgeInsets.only(top: 12.0, bottom: 0),
-                          child: Text(
-                            '\$' + items[index].price,
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8.0, top: 5.0, right: 8.0, bottom: 0.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            items[index].name,
                             style: GoogleFonts.poppins(
                               fontSize: 13,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.normal,
                               color: Colors.black,
                             ),
-                            textAlign: TextAlign.start,
                           ),
-                        ),
-                      ],
+
+                          Text(
+                            items[index].description,
+                            style: GoogleFonts.poppins(
+                              fontSize: 11,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.black26,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+
+                          Padding(
+                            padding: EdgeInsets.only(top: 12.0, bottom: 0),
+                            child: Text(
+                              '\$' + items[index].price,
+                              style: GoogleFonts.poppins(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
+          onTap: () {
+            Navigator.push(
+                context,
+                PageTransition(
+                  type: PageTransitionType.rightToLeft,
+                  child: MenuItem(
+                    categoryItem: items[index],
+                  ),
+                )
+            );
+          },
         );
       },
-    );
-
-    return GridView.builder(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        primary: false,
-        padding: const EdgeInsets.all(1),
-
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2
-        ),
-        itemBuilder: (content, index) {
-          return Card(
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              children: [
-                Image.asset(
-                    'assets/images/default-image.png'
-                )
-              ],
-            ),
-          );
-        }
     );
   }
 }
