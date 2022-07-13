@@ -226,7 +226,7 @@ class _DashboardState extends State<Dashboard> {
                     },
                     itemCount: categories.length,
                     controller: PageController(
-                        initialPage: 1, viewportFraction: 0.40),
+                        initialPage: 1, viewportFraction: 0.30),
                     onPageChanged: (index) {
                       setState(() {
                         currentPage = index;

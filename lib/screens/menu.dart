@@ -31,6 +31,7 @@ class Menu extends StatefulWidget {
 class _MenuState extends State<Menu> {
   var res_name;
   var res_id;
+  String dropdownValue = '';
   int _currentIndex=0;
   var images = [
     'assets/images/bbq-01.png',
@@ -86,7 +87,7 @@ class _MenuState extends State<Menu> {
           ),
         ],
       ),
-      backgroundColor: Color(0xffeeeeee),
+      backgroundColor: Color(0xfff3f3f3),
       body: Center(
         child: _menuData(res_id),
       ),
@@ -114,7 +115,8 @@ class _MenuState extends State<Menu> {
         if (snapshot.hasData) {
           List<MenuModel>? data = snapshot.data;
           if ((data!.length > 0) && (data[0].id != null)) {
-            return _menus(data);
+            return _showDropdown(data);
+            // return _categories(data[1].categories);
           }
           else {
             return _categories(data[0].categories);
@@ -138,10 +140,11 @@ class _MenuState extends State<Menu> {
       var data = body['result'];
       for (var menu in data) {
         var categories = menu['categories'];
+        var indx=0;
         List<MenuCategory> menuCategory = [];
 
         for (var category in categories) {
-          var items = category['items'], p = 0;
+          var items = category['items'];
           List<CategoryItem> categoryItems = [];
 
           for (var item in items) {
@@ -155,7 +158,7 @@ class _MenuState extends State<Menu> {
                   restaurantId: item['restaurant_id'],
                   categoryId: item['category_id'],
                   name: item['name'],
-                  description: item['description'],
+                  description: (item['description'] != null) ? item['description'] : 'No description given',
                   price: item['price'],
                   soldOut: item['soldout'],
                   position: item['position'],
@@ -171,10 +174,10 @@ class _MenuState extends State<Menu> {
               name: category['name'],
               position: category['position'],
               items: categoryItems,
-              image: images[p],
+              image: images[indx],
             ),
           );
-          p++;
+          indx++;
         }
 
         menus.add(
@@ -212,7 +215,7 @@ class _MenuState extends State<Menu> {
                 restaurantId: item['restaurant_id'],
                 categoryId: item['category_id'],
                 name: item['name'],
-                description: item['description'],
+                description: (item['description'] != null) ? item['description'] : 'No description given',
                 price: item['price'],
                 soldOut: item['soldout'],
                 position: item['position'],
@@ -293,6 +296,82 @@ class _MenuState extends State<Menu> {
           );
         }
     );
+  }
+
+  Widget _showDropdown(data) {
+    List<DropdownMenuItem<String>> _dropdownItems = [];
+    for (var menu in data) {
+      _dropdownItems.add(
+        new DropdownMenuItem(
+          child: Text(menu.name),
+          value: menu.id.toString(),
+        )
+      );
+    }
+    dropdownValue = (dropdownValue != '') ? dropdownValue : _dropdownItems[0].value!;
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.only(top: 10.0, bottom: 0.0, left: 0.0, right: 10.0),
+          alignment: Alignment.topRight,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Padding(
+              padding: EdgeInsets.only(top: 0.0, bottom: 0.0, right: 12.0, left: 12.0),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: dropdownValue,
+                  icon: const Icon(Icons.keyboard_arrow_down_sharp),
+                  elevation: 0,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 13.0,
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      dropdownValue = newValue!;
+                    });
+                  },
+                  items: _dropdownItems.toList(),
+                ),
+              ),
+            ),
+          ),
+          // child: DropdownButton<String>(
+          //   value: dropdownValue,
+          //   icon: const Icon(Icons.keyboard_arrow_down_sharp),
+          //   elevation: 16,
+          //   style: const TextStyle(color: Colors.deepPurple),
+          //   underline: Container(
+          //     height: 2,
+          //     color: Colors.deepPurpleAccent,
+          //   ),
+          //   onChanged: (String? newValue) {
+          //     setState(() {
+          //       dropdownValue = newValue!;
+          //     });
+          //   },
+          //   items: _dropdownItems.toList(),
+          // ),
+        ),
+
+        _renderMenu(data)
+      ],
+    );
+  }
+
+  _renderMenu(data) {
+    for (var menu in data) {
+      if (int.parse(dropdownValue) == menu.id) {
+        // return _categories(menu.categories);
+        return Expanded(
+          child: _categories(menu.categories),
+        );
+      }
+    }
   }
 
   ListTile _tile(String name, IconData icon) {
@@ -390,8 +469,8 @@ class _MenuState extends State<Menu> {
       child: CarouselSlider(
         options: CarouselOptions(
           height: 140.0,
-          autoPlay: false,
-          autoPlayInterval: Duration(seconds: 3),
+          autoPlay: true,
+          autoPlayInterval: Duration(seconds: 7),
           autoPlayAnimationDuration: Duration(milliseconds: 800),
           autoPlayCurve: Curves.fastOutSlowIn,
           pauseAutoPlayOnTouch: true,
@@ -485,39 +564,36 @@ class _MenuState extends State<Menu> {
                       ),
                     ),
 
-                    Container(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0, top: 0.0, right: 8.0, bottom: 0.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                items[index].name,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.black,
+                    Flexible(
+                      child: Container(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8.0, top: 0.0, right: 8.0, bottom: 0.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  items[index].name,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.black,
+                                  ),
                                 ),
-                              ),
 
-                              Container(
-                                width: MediaQuery.of(context).size.width * 0.6,
-                                padding: EdgeInsets.only(right: 0.0),
-                                child: Text(
-                                  items[index].description.substring(0, 60) + '...',
+                                Text(
+                                  items[index].description,
                                   style: GoogleFonts.poppins(
                                     fontSize: 11,
                                     fontWeight: FontWeight.normal,
                                     color: Colors.black26,
                                   ),
-                                  overflow: TextOverflow.fade,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              ),
-
-                            ],
-                          ),
-                        )
+                              ],
+                            ),
+                          )
+                      ),
                     ),
                   ],
                 ),
@@ -526,6 +602,29 @@ class _MenuState extends State<Menu> {
           ),
         );
       },
+    );
+
+    return GridView.builder(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        primary: false,
+        padding: const EdgeInsets.all(1),
+
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2
+        ),
+        itemBuilder: (content, index) {
+          return Card(
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: [
+                Image.asset(
+                    'assets/images/default-image.png'
+                )
+              ],
+            ),
+          );
+        }
     );
   }
 }

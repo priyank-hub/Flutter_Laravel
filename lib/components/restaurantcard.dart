@@ -24,19 +24,28 @@ class RestaurantCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10.0), //add border radius
-              child: Image.asset(
-                'assets/images/default-image.png',
-                fit:BoxFit.cover,
+              child: Image.network(
+                restaurant.image,
+                fit: BoxFit.cover,
+                height: 120,
               ),
             ),
-            Text(
-              restaurant.name,
-              style: GoogleFonts.poppins(
-                fontSize: 15,
-                fontWeight: FontWeight.normal,
-                color: Colors.black,
+            Flexible(
+              child: Container(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 12.0, left: 0.0, right: 0.0, bottom: 0.0),
+                  child: Text(
+                    restaurant.name,
+                    style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.black,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.left,
+                  ),
+                ),
               ),
-              textAlign: TextAlign.right,
             ),
           ],
         ),
