@@ -1,10 +1,8 @@
 
 
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:auth_flutter/api/api.dart';
-import 'package:auth_flutter/components/categoryImages.dart';
 import 'package:auth_flutter/components/menuCategoryCard.dart';
 import 'package:auth_flutter/models/categoryItem.dart';
 import 'package:auth_flutter/models/menuCategory.dart';
@@ -533,71 +531,83 @@ class _MenuState extends State<Menu> {
 
   Widget _items(items) {
 
-    return ListView.builder(
+    return GridView.builder(
       primary: false,
       itemCount: items.length,
       shrinkWrap: true,
+      padding: const EdgeInsets.all(1),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height / 1.8),
+          mainAxisSpacing: 10.0,
+      ),
       itemBuilder: (content, index) {
         return Padding(
-          padding: const EdgeInsets.only(top: 0.0, bottom: 0.0, left: 10.0, right: 10.0),
+          padding: const EdgeInsets.only(top: 0.0, bottom: 0.0, left: 6.0, right: 6.0),
           child: Card(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(5),
             ),
             elevation: 0.0,
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      height: 70.0,
-                      width: 100.0,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(5.0), //add border radius
-                        child: Image.network(
-                          items[index].image,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5), bottomLeft: Radius.circular(0), bottomRight: Radius.circular(0)), //add border radius
+                    child: Image.network(
+                      items[index].image,
+                      fit: BoxFit.cover,
+                      height: 130,
+                      width: MediaQuery.of(context).size.width,
                     ),
-
-                    Flexible(
-                      child: Container(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 8.0, top: 0.0, right: 8.0, bottom: 0.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  items[index].name,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.normal,
-                                    color: Colors.black,
-                                  ),
-                                ),
-
-                                Text(
-                                  items[index].description,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.normal,
-                                    color: Colors.black26,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          )
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              )
+
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8.0, top: 5.0, right: 8.0, bottom: 0.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          items[index].name,
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.black,
+                          ),
+                        ),
+
+                        Text(
+                          items[index].description,
+                          style: GoogleFonts.poppins(
+                            fontSize: 11,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.black26,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+
+                        Padding(
+                          padding: EdgeInsets.only(top: 12.0, bottom: 0),
+                          child: Text(
+                            '\$' + items[index].price,
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            textAlign: TextAlign.start,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         );
