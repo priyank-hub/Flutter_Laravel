@@ -354,6 +354,7 @@ class _MenuItemState extends State<MenuItem> {
                                             setState(() {
                                               _plusMinusOptions[category.id]![option.id] = (_plusMinusOptions[category.id]![option.id]! - 1);
                                             });
+
                                           }
                                         }
                                       ),
@@ -470,11 +471,15 @@ class _MenuItemState extends State<MenuItem> {
 
     var categories = item.optionCategory;
     bool flag = true;
+    var zeroCount = 0;
     for (var category in categories) {
       if (category.isRequired) {
         for (var option in category.options) {
           if (option.maximum > 1) {
-            if (_allOptions[category.id][option.id] < 0) {
+            if (_allOptions[category.id][option.id] == 0) {
+              zeroCount++;
+            }
+            if (zeroCount == _allOptions[category.id].length) {
               flag = false;
             }
           }
