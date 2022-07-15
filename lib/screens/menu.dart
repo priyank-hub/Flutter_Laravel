@@ -647,6 +647,7 @@ class _MenuState extends State<Menu> {
             ),
           ),
           onTap: () {
+            print(items[index].optionCategory);
             Navigator.push(
                 context,
                 PageTransition(

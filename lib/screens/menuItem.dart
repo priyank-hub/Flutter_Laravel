@@ -17,9 +17,26 @@ class _MenuItemState extends State<MenuItem> {
   var item;
   Map<int,OptionCategoryOption?> _singleOptions = {};
   Map<int, List<OptionCategoryOption>> _multipleOptions = {};
+  Map<int, Map<int, int>> _plusMinusOptions = {};
+  Map<int, int> map = {};
 
   _MenuItemState(CategoryItem categoryItem) {
     this.item = categoryItem;
+
+    for (var category in item.optionCategory) {
+      for (var option in category.options) {
+        if (!category.isSingle) {
+          if (option.maximum > 1) {
+            map.addAll({
+              option.id: 0
+            });
+            _plusMinusOptions.addAll({
+              category.id: map
+            });
+          }
+        }
+      }
+    }
   }
 
   @override
@@ -143,7 +160,7 @@ class _MenuItemState extends State<MenuItem> {
                     minimumSize: const Size.fromHeight(50), // NEW
                   ),
                   onPressed: () {
-                    var res = _checkRequired(item);
+                    var res = _checkRequired();
                     if (!res) {
                       showDialog(
                         barrierDismissible: true,//tapping outside dialog will close the dialog if set 'true'
@@ -191,6 +208,9 @@ class _MenuItemState extends State<MenuItem> {
           primary: false,
           itemCount: data.length,
           itemBuilder: (content, index) {
+            // print('plus minus options');
+            // print(_plusMinusOptions[data[index].id][option]);
+
             return Column(
               children: [
                 Column(
@@ -225,6 +245,7 @@ class _MenuItemState extends State<MenuItem> {
                         itemBuilder: (content, index2) {
                           var option = data[index].options[index2];
                           var category = data[index];
+
                           if (data[index].isSingle) {
                             return RadioListTile<OptionCategoryOption>(
                               title: Text(option.name),
@@ -312,7 +333,62 @@ class _MenuItemState extends State<MenuItem> {
                               );
                             }
                             else {
-                              return Text('plus minus option');
+                              // return Text('plus minus option');
+
+                              return Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Row(
+                                  children: <Widget>[
+                                    Ink(
+                                      decoration: const ShapeDecoration(
+                                        color: Color(0xffdedede),
+                                        shape: CircleBorder(),
+                                      ),
+                                      width: 40,
+                                      height: 40,
+                                      child: IconButton(
+                                        icon: Icon(Icons.remove, size: 18),
+                                        onPressed: () {
+                                          var count = _plusMinusOptions[category.id]![option.id];
+                                          if (count! >= 1) {
+                                            setState(() {
+                                              _plusMinusOptions[category.id]![option.id] = (_plusMinusOptions[category.id]![option.id]! - 1);
+                                            });
+                                          }
+                                        }
+                                      ),
+                                    ),
+
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 12, right: 12),
+                                      child: Text(
+                                          _plusMinusOptions[data[index].id]![option.id].toString(),
+                                      ),
+                                    ),
+
+                                    Ink(
+                                      decoration: const ShapeDecoration(
+                                        color: Color(0xffdedede),
+                                        shape: CircleBorder(),
+                                      ),
+                                      width: 40,
+                                      height: 40,
+                                      child: IconButton(
+                                        icon: Icon(Icons.add, size: 18),
+                                        onPressed: () {
+                                          var count = _plusMinusOptions[category.id]![option.id];
+                                          if (count! < option.maximum) {
+                                            setState(() {
+                                              _plusMinusOptions[category.id]![option.id] = (_plusMinusOptions[category.id]![option.id]! + 1);
+                                            });
+                                          }
+                                          print(_plusMinusOptions);
+                                        }
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
                             }
                           }
                         }
@@ -384,20 +460,32 @@ class _MenuItemState extends State<MenuItem> {
     }
   }
 
-  bool _checkRequired(item) {
+  bool _checkRequired() {
     var _allOptions = {};
     _allOptions.addAll(_singleOptions);
     _allOptions.addAll(_multipleOptions);
+    _allOptions.addAll(_plusMinusOptions);
+
+    print(_allOptions);
 
     var categories = item.optionCategory;
+    bool flag = true;
     for (var category in categories) {
       if (category.isRequired) {
+        for (var option in category.options) {
+          if (option.maximum > 1) {
+            if (_allOptions[category.id][option.id] < 0) {
+              flag = false;
+            }
+          }
+        }
+
         if (_allOptions[category.id] == null) {
-          return false;
+          flag = false;
         }
       }
     }
-    return true;
+    return flag;
   }
 
   _addToCart() {
