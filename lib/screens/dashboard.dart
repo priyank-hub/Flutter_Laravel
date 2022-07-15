@@ -6,7 +6,6 @@ import 'package:auth_flutter/components/restaurantcard.dart';
 import 'package:auth_flutter/models/category.dart';
 import 'package:auth_flutter/models/restaurant.dart';
 import 'package:auth_flutter/screens/login.dart';
-import 'package:auth_flutter/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -119,7 +118,7 @@ class _DashboardState extends State<Dashboard> {
     ];
 
     Icon customIcon = const Icon(Icons.search);
-    Widget customSearchBar = Text('Dashboard');
+    Widget customSearchBar = Text('Restaurants');
 
     return Scaffold(
       appBar: AppBar(
@@ -207,33 +206,34 @@ class _DashboardState extends State<Dashboard> {
           padding: EdgeInsets.all(8.0),
           child: SingleChildScrollView(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  height: MediaQuery
-                      .of(context)
-                      .size
-                      .height * 0.25,
-                  width: double.infinity,
-                  child: PageView.builder(
-                    itemBuilder: (context, index) {
-                      return Opacity(
-                        opacity: 0.8,
-                        child: CategoryCard(
-                          category: categories[index],
-                        ),
-                      );
-                    },
-                    itemCount: categories.length,
-                    controller: PageController(
-                        initialPage: 1, viewportFraction: 0.30),
-                    onPageChanged: (index) {
-                      setState(() {
-                        currentPage = index;
-                      });
-                    },
-                  ),
-                ),
+                // Container(
+                //   height: MediaQuery
+                //       .of(context)
+                //       .size
+                //       .height * 0.25,
+                //   width: double.infinity,
+                //   child: PageView.builder(
+                //     itemBuilder: (context, index) {
+                //       return Opacity(
+                //         opacity: 0.8,
+                //         child: CategoryCard(
+                //           category: categories[index],
+                //         ),
+                //       );
+                //     },
+                //     itemCount: categories.length,
+                //     controller: PageController(
+                //         initialPage: 1, viewportFraction: 0.30),
+                //     onPageChanged: (index) {
+                //       setState(() {
+                //         currentPage = index;
+                //       });
+                //     },
+                //   ),
+                // ),
 
                 Padding(
                   padding: EdgeInsets.only(
@@ -340,26 +340,61 @@ Future<List> getRestaurants() async {
           id: restaurant['id'],
           name: restaurant['name'],
           image: restaurant['image'],
+          // description: restaurant['description'],
+          tags: restaurant['tags'],
+          isOpenNow: restaurant['isOpenNow'],
+          orderTypes: restaurant['order_types'],
         )
     );
   }
   return restaurants;
 }
 
-GridView _restaurants(data) {
-  return GridView.builder(
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      primary: false,
-      padding: const EdgeInsets.all(1),
-      itemCount: data.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2
-      ),
-      itemBuilder: (context, index) {
-        return RestaurantCard(
-            restaurant: data[index],
-        );
-      }
+Widget _restaurants(data) {
+
+  return ListView.builder(
+    physics: NeverScrollableScrollPhysics(),
+    shrinkWrap: true,
+    itemCount:data.length,
+    itemBuilder: (context,index){
+      return  InkWell(
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          elevation: 0.0,
+          child: Column(
+            children: [
+              Container(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5), bottomLeft: Radius.circular(0), bottomRight: Radius.circular(0)), //add border radius
+                  child: Image.network(
+                    data[index].image,
+                    fit: BoxFit.cover,
+                    height: MediaQuery.of(context).size.height * 0.25,
+                    width: MediaQuery.of(context).size.width,
+                  ),
+                ),
+              ),
+              ListTile(
+                title: Text(data[index].name),
+                subtitle: Text(data[index].tags),
+              )
+            ],
+          ),
+        ),
+        onTap: () {
+          Navigator.push(
+              context,
+              PageTransition(
+                  type: PageTransitionType.rightToLeft,
+                  child: Menu(
+                    restaurant: data[index],
+                  )
+              )
+          );
+        },
+      );
+    }
   );
 }

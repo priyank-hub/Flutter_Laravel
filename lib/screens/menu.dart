@@ -91,7 +91,7 @@ class _MenuState extends State<Menu> {
       ),
       backgroundColor: Color(0xfff3f3f3),
       body: Center(
-        child: _menuData(res_id),
+        child: _menuData(res_id)
       ),
     );
   }
@@ -181,8 +181,8 @@ class _MenuState extends State<Menu> {
                     ItemOptionCategory(
                       id: option_category['id'],
                       name: option_category['name'],
-                      isRequired: option_category['isRequired'],
-                      isSingle: option_category['isSingle'],
+                      isRequired: option_category['required'],
+                      isSingle: option_category['single'],
                       max: option_category['max'],
                       position: option_category['position'],
                       itemId: option_category['item_id'],
@@ -277,8 +277,8 @@ class _MenuState extends State<Menu> {
                   ItemOptionCategory(
                     id: option_category['id'],
                     name: option_category['name'],
-                    isRequired: option_category['isRequired'],
-                    isSingle: option_category['isSingle'],
+                    isRequired: option_category['required'],
+                    isSingle: option_category['single'],
                     max: option_category['max'],
                     position: option_category['position'],
                     itemId: option_category['item_id'],
@@ -390,6 +390,7 @@ class _MenuState extends State<Menu> {
     }
     dropdownValue = (dropdownValue != '') ? dropdownValue : _dropdownItems[0].value!;
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           padding: EdgeInsets.only(top: 10.0, bottom: 0.0, left: 0.0, right: 10.0),
@@ -420,22 +421,6 @@ class _MenuState extends State<Menu> {
               ),
             ),
           ),
-          // child: DropdownButton<String>(
-          //   value: dropdownValue,
-          //   icon: const Icon(Icons.keyboard_arrow_down_sharp),
-          //   elevation: 16,
-          //   style: const TextStyle(color: Colors.deepPurple),
-          //   underline: Container(
-          //     height: 2,
-          //     color: Colors.deepPurpleAccent,
-          //   ),
-          //   onChanged: (String? newValue) {
-          //     setState(() {
-          //       dropdownValue = newValue!;
-          //     });
-          //   },
-          //   items: _dropdownItems.toList(),
-          // ),
         ),
 
         _renderMenu(data)

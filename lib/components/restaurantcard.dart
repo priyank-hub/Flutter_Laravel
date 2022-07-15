@@ -63,23 +63,4 @@ class RestaurantCard extends StatelessWidget {
       ),
     );
   }
-
-  // Future<MenuModel> _getMenus() async {
-  //   MenuModel menus;
-  //   var id = restaurant.id;
-  //   var res = await Network().getDataWithoutToken('/restaurants/$id/menu');
-  //   var body = json.decode(res.body);
-  //   var data = body['data'][0];
-  //
-  //   menus = MenuModel(
-  //     id: data['id'],
-  //     name: data['name'],
-  //     startsAt: data['startsAt'],
-  //     endsAt: data['endsAt'],
-  //     isAvailable: data['isAvailable'],
-  //     // categories: data['categories']
-  //   );
-  //
-  //   return menus;
-  // }
 }
