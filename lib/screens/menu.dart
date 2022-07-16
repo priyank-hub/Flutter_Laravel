@@ -581,7 +581,7 @@ class _MenuState extends State<Menu> {
       padding: const EdgeInsets.all(1),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height / 1.8),
+          childAspectRatio: MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height / 1.7),
           mainAxisSpacing: 10.0,
       ),
       itemBuilder: (content, index) {

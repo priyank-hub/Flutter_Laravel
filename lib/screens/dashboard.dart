@@ -24,6 +24,9 @@ class _DashboardState extends State<Dashboard> {
   var name;
   var restaurants = [];
 
+  Icon customIcon = Icon(Icons.search);
+  Widget customSearchBar = Text('Restaurants');
+
   void initState() {
     _loadUserData();
     // _getRestaurants();
@@ -41,22 +44,6 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  // _getRestaurants() async {
-  //   print('getting restaurants...');
-  //   var res = await Network().getDataWithoutToken('/restaurants');
-  //   var body = json.decode(res.body);
-  //   for (var restaurant in body['restaurants']['data']) {
-  //     restaurants.add(
-  //       Restaurant(
-  //         id: restaurant['id'],
-  //         name: restaurant['name'],
-  //         image: restaurant['image'],
-  //       ),
-  //     );
-  //     // print(restaurant);
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     // final ButtonStyle style = TextButton.styleFrom(primary: Theme.of(context).colorScheme.onPrimary);
@@ -64,61 +51,58 @@ class _DashboardState extends State<Dashboard> {
 
     var categories = [
       Category(
-        name: 'Test 1',
+        name: 'BBQ',
         image: 'assets/images/bbq-01.png',
       ),
       Category(
-        name: 'Test 2',
+        name: 'Breakfast',
         image: 'assets/images/breakfast-01.png',
       ),
       Category(
-        name: 'Test 3',
+        name: 'Burgers',
         image: 'assets/images/burgers-01.png',
       ),
       Category(
-        name: 'Test 1',
+        name: 'Cafe',
         image: 'assets/images/cafe-01.png',
       ),
       Category(
-        name: 'Test 2',
+        name: 'Caribbean',
         image: 'assets/images/carribean-01.png',
       ),
       Category(
-        name: 'Test 3',
+        name: 'Chinese',
         image: 'assets/images/chinese-01.png',
       ),
       Category(
-        name: 'Test 3',
+        name: 'Desserts',
         image: 'assets/images/desserts-01.png',
       ),
       Category(
-        name: 'Test 2',
+        name: 'FastFood',
         image: 'assets/images/fastfood-01.png',
       ),
       Category(
-        name: 'Test 3',
+        name: 'Healthy',
         image: 'assets/images/healthy-01.png',
       ),
       Category(
-        name: 'Test 3',
+        name: 'Japanese',
         image: 'assets/images/japanese-01.png',
       ),
       Category(
-        name: 'Test 3',
+        name: 'Kosher',
         image: 'assets/images/kosher-01.png',
       ),
       Category(
-        name: 'Test 3',
+        name: 'Vegetarian',
         image: 'assets/images/vegetarian-01.png',
       ),
       Category(
-        name: 'Test 3',
+        name: 'Vietnamese',
         image: 'assets/images/vietnamese-01.png',
       ),
     ];
-
-    Icon customIcon = const Icon(Icons.search);
-    Widget customSearchBar = Text('Restaurants');
 
     return Scaffold(
       appBar: AppBar(
@@ -148,22 +132,27 @@ class _DashboardState extends State<Dashboard> {
               setState(() {
                 if (customIcon.icon == Icons.search) {
                   print('search bar');
-                  customIcon = const Icon(Icons.cancel);
-                  customSearchBar = const ListTile(
-                    leading: Icon(
-                      Icons.search,
-                      color: Colors.white,
-                      size: 28,
-                    ),
+                  customIcon = Icon(Icons.cancel);
+                  customSearchBar = ListTile(
+                    // leading: Icon(
+                    //   Icons.search,
+                    //   color: Colors.white,
+                    //   size: 28,
+                    // ),
                     title: TextField(
                       decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        // border: OutlineInputBorder(
+                        //   borderRadius: BorderRadius.circular(10.0),
+                        // ),
+                        border: InputBorder.none,
                         hintText: 'search for restaurant...',
                         hintStyle: TextStyle(
-                          color: Colors.white,
+                          color: Colors.grey,
                           fontSize: 18,
                           fontStyle: FontStyle.italic,
                         ),
-                        border: InputBorder.none,
                       ),
                       style: TextStyle(
                         color: Colors.white,
@@ -172,8 +161,8 @@ class _DashboardState extends State<Dashboard> {
                   );
                 }
                 else {
-                  customIcon = const Icon(Icons.search);
-                  customSearchBar = const Text('Dashboard');
+                  customIcon = Icon(Icons.search);
+                  customSearchBar = Text('Dashboard');
                 }
               });
             },
@@ -209,31 +198,41 @@ class _DashboardState extends State<Dashboard> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Container(
-                //   height: MediaQuery
-                //       .of(context)
-                //       .size
-                //       .height * 0.25,
-                //   width: double.infinity,
-                //   child: PageView.builder(
-                //     itemBuilder: (context, index) {
-                //       return Opacity(
-                //         opacity: 0.8,
-                //         child: CategoryCard(
-                //           category: categories[index],
-                //         ),
-                //       );
-                //     },
-                //     itemCount: categories.length,
-                //     controller: PageController(
-                //         initialPage: 1, viewportFraction: 0.30),
-                //     onPageChanged: (index) {
-                //       setState(() {
-                //         currentPage = index;
-                //       });
-                //     },
-                //   ),
-                // ),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.2,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: List.generate(categories.length, (int index) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        // mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Card(
+                            elevation: 0.0,
+                            color: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Container(
+                              width: MediaQuery.of(context).size.height * 0.15,
+                              child: Image.asset(
+                                categories[index].image,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            categories[index].name,
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.normal,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
+                  )
+                ),
 
                 Padding(
                   padding: EdgeInsets.only(
@@ -250,46 +249,6 @@ class _DashboardState extends State<Dashboard> {
                 ),
 
                 _restaurantData(),
-
-                // GridView.builder(
-                //   scrollDirection: Axis.vertical,
-                //   shrinkWrap: true,
-                //   primary: false,
-                //   padding: const EdgeInsets.all(1),
-                //
-                //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                //       crossAxisCount: 2
-                //   ),
-                //   itemBuilder: (context, index) =>
-                //       // Padding(
-                //       //   padding: const EdgeInsets.all(8.0),
-                //       //   child: RaisedButton(
-                //       //     shape: RoundedRectangleBorder(
-                //       //         borderRadius: BorderRadius.circular(12.0)
-                //       //     ),
-                //       //     elevation: 0.0,
-                //       //     color: Color(0xff7c4ad9),
-                //       //     onPressed: () {
-                //       //       Navigator.push(
-                //       //           context,
-                //       //           PageTransition(
-                //       //               type: PageTransitionType.rightToLeft,
-                //       //               child: Menu(
-                //       //                 restaurant: restaurants[index],
-                //       //               )
-                //       //           )
-                //       //       );
-                //       //     },
-                //       //     child: RestaurantCard(
-                //       //       restaurant: restaurants[index],
-                //       //     ),
-                //       //   ),
-                //       // ),
-                //     RestaurantCard(
-                //     restaurant: restaurants[index],
-                //   ),
-                //   itemCount: restaurants.length,
-                // )
               ],
             ),
           )
