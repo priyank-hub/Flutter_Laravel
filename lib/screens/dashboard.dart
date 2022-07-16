@@ -340,10 +340,12 @@ Future<List> getRestaurants() async {
           id: restaurant['id'],
           name: restaurant['name'],
           image: restaurant['image'],
+          mobileBackground: restaurant['mobile_background'],
           // description: restaurant['description'],
           tags: restaurant['tags'],
           isOpenNow: restaurant['isOpenNow'],
           orderTypes: restaurant['order_types'],
+          openingHours: restaurant['openingHours'],
         )
     );
   }

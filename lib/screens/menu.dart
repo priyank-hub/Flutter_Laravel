@@ -51,6 +51,7 @@ class _MenuState extends State<Menu> {
     'assets/images/vietnamese-01.png',
   ];
   var menu;
+  var restaurant;
 
   void initState() {
     // _getRestaurantMenu();
@@ -60,13 +61,14 @@ class _MenuState extends State<Menu> {
   _MenuState(Restaurant restaurant) {
     this.res_name = restaurant.name;
     this.res_id = restaurant.id;
+    this.restaurant = restaurant;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(res_name),
+        title: Text('Menu'),
         backgroundColor: Color(0xff7c4ad9),
         elevation: 10,
         actions: <Widget>[
@@ -90,8 +92,79 @@ class _MenuState extends State<Menu> {
         ],
       ),
       backgroundColor: Color(0xfff3f3f3),
-      body: Center(
-        child: _menuData(res_id)
+      body: Container(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                  height: MediaQuery.of(context).size.height * 0.3, // ignore this, cos I am giving height to the container
+                  width: MediaQuery.of(context).size.width, // ignore this, cos I am giving width to the container
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          fit: BoxFit.cover,
+                          colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
+                          image: NetworkImage(
+                            restaurant.mobileBackground,
+                          )
+                      )
+                  ),
+                  alignment: Alignment.bottomLeft, // This aligns the child of the container
+                  child: Container(
+                    padding: EdgeInsets.all(16),
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Text(
+                              restaurant.name,
+                              style: GoogleFonts.poppins(
+                                fontSize: 26,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Text(
+                              restaurant.tags,
+                              style: GoogleFonts.poppins(
+                                fontSize: 15,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.white,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Text(
+                              restaurant.openingHours,
+                              style: GoogleFonts.poppins(
+                                fontSize: 15,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.white,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+              ),
+
+              _menuData(res_id),
+            ],
+          )
+        )
       ),
     );
   }
@@ -118,7 +191,6 @@ class _MenuState extends State<Menu> {
           List<MenuModel>? data = snapshot.data;
           if ((data!.length > 0) && (data[0].id != null)) {
             return _showDropdown(data);
-            // return _categories(data[1].categories);
           }
           else {
             return _categories(data[0].categories);
@@ -126,7 +198,7 @@ class _MenuState extends State<Menu> {
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");
         }
-        return CircularProgressIndicator();
+        return Center(child: CircularProgressIndicator());
       },
     );
   }
@@ -140,6 +212,7 @@ class _MenuState extends State<Menu> {
     // Menus present
     if (body['success']) {
       var data = body['result'];
+
       for (var menu in data) {
         var categories = menu['categories'];
         var indx=0;
@@ -331,53 +404,6 @@ class _MenuState extends State<Menu> {
     }
   }
 
-  ListView _menus(data) {
-    return ListView.builder(
-        itemCount: data.length,
-        itemBuilder: (context, index) {
-          return Card(
-            child: Column(
-              children: [
-                _tile(data[index].name, Icons.dining),
-
-                GridView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  primary: false,
-                  padding: const EdgeInsets.all(1),
-
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3
-                  ),
-                  itemBuilder: (context, index2) =>
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12.0)
-                            ),
-                            elevation: 0.0,
-                            color: Color(0xffd2d2d2),
-                            onPressed: () {
-                              print(data[index].categories[index2].items);
-                            },
-                            child: Center(
-                              child: MenuCategoryCard(
-                                menuCategory: data[index].categories[index2],
-                              ),
-                            )
-                        ),
-                      ),
-                  itemCount: data[index].categories.length,
-                ),
-              ],
-            ),
-            // child: _tile(data[index].name, data[index].categories, Icons.work)
-          );
-        }
-    );
-  }
-
   Widget _showDropdown(data) {
     List<DropdownMenuItem<String>> _dropdownItems = [];
     for (var menu in data) {
@@ -389,6 +415,7 @@ class _MenuState extends State<Menu> {
       );
     }
     dropdownValue = (dropdownValue != '') ? dropdownValue : _dropdownItems[0].value!;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -431,10 +458,7 @@ class _MenuState extends State<Menu> {
   _renderMenu(data) {
     for (var menu in data) {
       if (int.parse(dropdownValue) == menu.id) {
-        // return _categories(menu.categories);
-        return Expanded(
-          child: _categories(menu.categories),
-        );
+        return _categories(menu.categories);
       }
     }
   }
@@ -449,41 +473,26 @@ class _MenuState extends State<Menu> {
           color: Colors.black,
         ),
       ),
-      // leading: Icon(
-      //   icon,
-      //   color: Colors.blue[500],
-      // ),
     );
   }
 
-  Container _categories(data) {
-    return Container(
-      child: Column(
-        children: [
-          _categoriesSlider(data),
+  Widget _categories(data) {
+    return ListView.builder(
+        itemCount: data.length,
+        shrinkWrap: true,
+        primary: false,
+        itemBuilder: (context, index) {
+          return Container(
+            child: Column(
+              children: [
+                _tile(data[index].name, Icons.dining),
 
-          Flexible(
-            child: ListView.builder(
-                itemCount: data.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return Container(
-                    child: Column(
-                      children: [
-                        _tile(data[index].name, Icons.dining),
-
-                        _items(data[index].items),
-                      ],
-                    ),
-                    // child: _tile(data[index].name, data[index].categories, Icons.work)
-                  );
-                }
+                _items(data[index].items),
+              ],
             ),
-          ),
-
-          // ScrollSpy(),
-        ],
-      ),
+            // child: _tile(data[index].name, data[index].categories, Icons.work)
+          );
+        }
     );
   }
 
