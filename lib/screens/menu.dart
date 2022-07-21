@@ -11,6 +11,7 @@ import 'package:auth_flutter/models/optionCategoryOption.dart';
 import 'package:auth_flutter/models/restaurant.dart';
 import 'package:auth_flutter/models/menuModel.dart';
 import 'package:auth_flutter/providers/cartProvider.dart';
+import 'package:auth_flutter/screens/checkout.dart';
 import 'package:auth_flutter/screens/menuItem.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -88,10 +89,13 @@ class _MenuState extends State<Menu> {
                   position: const BadgePosition(start: 30, bottom: 30),
                   child: IconButton(
                     onPressed: () {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => const CartScreen()));
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: Checkout(),
+                          )
+                      );
                     },
                     icon: const Icon(Icons.shopping_cart),
                   ),

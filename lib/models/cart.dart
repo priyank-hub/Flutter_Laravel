@@ -5,7 +5,8 @@ class Cart {
     required this.restaurantName,
     required this.itemId,
     required this.itemName,
-    // required this.charge,
+    required this.itemImage,
+    required this.charge,
     required this.originalCharge,
     required this.soldout,
     // required this.taxExempt,
@@ -18,7 +19,8 @@ class Cart {
   String restaurantName;
   int itemId;
   String itemName;
-  // double charge;
+  String itemImage;
+  double charge;
   String originalCharge;
   bool soldout;
   // bool taxExempt;
@@ -45,11 +47,13 @@ class Cart {
       restaurantName: json['restaurantName'] as String,
       itemId: json['itemId'] as int,
       itemName: json['itemName'] as String,
+      itemImage: json['itemImage'] as String,
       soldout: json['soldout'] as bool,
       instructions: json['instructions'] as String,
       quantity: json['quantity'] as int,
       optionCategories: json['optionCategories'] as Map,
       originalCharge: json['originalCharge'] as String,
+      charge: json['charge'] as double,
     );
   }
 }

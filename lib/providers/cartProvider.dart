@@ -16,7 +16,7 @@ class CartProvider with ChangeNotifier {
 
   List<Cart> cart = [];
 
-  Future<List<Cart>>? getItems() async {
+  List<Cart> getItems() {
     notifyListeners();
     return cart;
   }

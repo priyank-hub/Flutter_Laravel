@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'checkout.dart';
 import 'menu.dart';
 
 
@@ -186,10 +187,13 @@ class _DashboardState extends State<Dashboard> {
                   position: const BadgePosition(start: 30, bottom: 30),
                   child: IconButton(
                     onPressed: () {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => const CartScreen()));
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: Checkout(),
+                          )
+                      );
                     },
                     icon: const Icon(Icons.shopping_cart),
                   ),
