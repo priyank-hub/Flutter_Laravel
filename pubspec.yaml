@@ -35,6 +35,8 @@ dependencies:
   page_transition: ^2.0.5
   carousel_slider: ^2.2.1
   liquid_ui: ^1.0.0
+  badges: ^2.0.2
+  provider: ^6.0.3
 
 dev_dependencies:
   flutter_test:

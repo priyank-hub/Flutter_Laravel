@@ -5,9 +5,12 @@ import 'package:auth_flutter/components/categorycard.dart';
 import 'package:auth_flutter/components/restaurantcard.dart';
 import 'package:auth_flutter/models/category.dart';
 import 'package:auth_flutter/models/restaurant.dart';
+import 'package:auth_flutter/providers/cartProvider.dart';
 import 'package:auth_flutter/screens/login.dart';
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -25,7 +28,7 @@ class _DashboardState extends State<Dashboard> {
   var restaurants = [];
 
   Icon customIcon = Icon(Icons.search);
-  Widget customSearchBar = Text('Restaurants');
+  Widget customSearchBar = Text('Restaurants', );
 
   void initState() {
     _loadUserData();
@@ -167,6 +170,32 @@ class _DashboardState extends State<Dashboard> {
               });
             },
             icon: customIcon,
+          ),
+
+          Container(
+            child: Consumer<CartProvider>(
+              builder: (context, model, _) {
+                return Badge(
+                  badgeContent: Text(
+                    model.getCounter().toString(),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  position: const BadgePosition(start: 30, bottom: 30),
+                  child: IconButton(
+                    onPressed: () {
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => const CartScreen()));
+                    },
+                    icon: const Icon(Icons.shopping_cart),
+                  ),
+                );
+              },
+            ),
           ),
 
           PopupMenuButton<String>(
@@ -347,6 +376,13 @@ Widget _restaurants(data) {
         onTap: () {
           Navigator.push(
               context,
+              // MaterialPageRoute(
+              //     builder: (context) {
+              //       return Menu(
+              //         restaurant: data[index],
+              //       );
+              //     }
+              // )
               PageTransition(
                   type: PageTransitionType.rightToLeft,
                   child: Menu(

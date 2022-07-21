@@ -6,7 +6,7 @@ class CategoryItem {
     required this.restaurantId,
     required this.categoryId,
     required this.name,
-    this.description,
+    required this.description,
     required this.price,
     required this.soldOut,
     required this.position,
@@ -18,7 +18,7 @@ class CategoryItem {
   int restaurantId;
   int categoryId;
   String name;
-  String? description;
+  String description;
   String price;
   bool soldOut;
   int position;

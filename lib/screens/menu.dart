@@ -10,13 +10,16 @@ import 'package:auth_flutter/models/menuCategory.dart';
 import 'package:auth_flutter/models/optionCategoryOption.dart';
 import 'package:auth_flutter/models/restaurant.dart';
 import 'package:auth_flutter/models/menuModel.dart';
+import 'package:auth_flutter/providers/cartProvider.dart';
 import 'package:auth_flutter/screens/menuItem.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:badges/badges.dart';
 
 import 'login.dart';
 
@@ -54,7 +57,6 @@ class _MenuState extends State<Menu> {
   var restaurant;
 
   void initState() {
-    // _getRestaurantMenu();
     super.initState();
   }
 
@@ -72,6 +74,32 @@ class _MenuState extends State<Menu> {
         backgroundColor: Color(0xff7c4ad9),
         elevation: 10,
         actions: <Widget>[
+          Container(
+            child: Consumer<CartProvider>(
+              builder: (context, model, _) {
+                return Badge(
+                  badgeContent: Text(
+                    model.getCounter().toString(),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  position: const BadgePosition(start: 30, bottom: 30),
+                  child: IconButton(
+                    onPressed: () {
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => const CartScreen()));
+                    },
+                    icon: const Icon(Icons.shopping_cart),
+                  ),
+                );
+              },
+            ),
+          ),
+
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert),
             onSelected: (String result) {
@@ -93,80 +121,219 @@ class _MenuState extends State<Menu> {
       ),
       backgroundColor: Color(0xfff3f3f3),
       body: Container(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                  height: MediaQuery.of(context).size.height * 0.3, // ignore this, cos I am giving height to the container
-                  width: MediaQuery.of(context).size.width, // ignore this, cos I am giving width to the container
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          fit: BoxFit.cover,
-                          colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
-                          image: NetworkImage(
-                            restaurant.mobileBackground,
+          child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                      height: MediaQuery.of(context).size.height * 0.3, // ignore this, cos I am giving height to the container
+                      width: MediaQuery.of(context).size.width, // ignore this, cos I am giving width to the container
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
+                              image: NetworkImage(
+                                restaurant.mobileBackground,
+                              )
                           )
+                      ),
+                      alignment: Alignment.bottomLeft, // This aligns the child of the container
+                      child: Container(
+                        padding: EdgeInsets.all(16),
+                        child: Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  restaurant.name,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  restaurant.tags,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.white,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  restaurant.openingHours,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.white,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       )
                   ),
-                  alignment: Alignment.bottomLeft, // This aligns the child of the container
-                  child: Container(
-                    padding: EdgeInsets.all(16),
-                    child: Align(
-                      alignment: Alignment.bottomLeft,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Text(
-                              restaurant.name,
-                              style: GoogleFonts.poppins(
-                                fontSize: 26,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
 
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Text(
-                              restaurant.tags,
-                              style: GoogleFonts.poppins(
-                                fontSize: 15,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.white,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Text(
-                              restaurant.openingHours,
-                              style: GoogleFonts.poppins(
-                                fontSize: 15,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.white,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-              ),
-
-              _menuData(res_id),
-            ],
+                  _menuData(res_id),
+                ],
+              )
           )
-        )
       ),
     );
+      // child: Scaffold(
+      //   appBar: AppBar(
+      //     title: Text('Menu'),
+      //     backgroundColor: Color(0xff7c4ad9),
+      //     elevation: 10,
+      //     actions: <Widget>[
+      //       Container(
+      //         child: Badge(
+      //           badgeContent: ChangeNotifierProvider(
+      //             create: (_) => CartProvider(),
+      //             builder: (context, child) {
+      //               return Text(
+      //                 Provider.of<CartProvider>(context).getCounter().toString(),
+      //                 style: TextStyle(
+      //                   color: Colors.white,
+      //                   fontWeight: FontWeight.normal,
+      //                 )
+      //               );
+      //               // return Consumer<CartProvider>(
+      //               //   builder: (context, value, child) {
+      //               //     return Text(
+      //               //       Provider.of<CartProvider>(context).getCounter().toString(),
+      //               //       style: TextStyle(
+      //               //         color: Colors.white,
+      //               //         fontWeight: FontWeight.normal,
+      //               //       ),
+      //               //     );
+      //               //   },
+      //               // );
+      //             }
+      //           ),
+      //           position: const BadgePosition(start: 30, bottom: 30),
+      //           child: IconButton(
+      //             onPressed: () {
+      //               // Navigator.push(
+      //               //     context,
+      //               //     MaterialPageRoute(
+      //               //         builder: (context) => const CartScreen()));
+      //             },
+      //             icon: const Icon(Icons.shopping_cart),
+      //           ),
+      //         ),
+      //       ),
+      //
+      //       PopupMenuButton<String>(
+      //         icon: Icon(Icons.more_vert),
+      //         onSelected: (String result) {
+      //           switch (result) {
+      //             case 'logout':
+      //               _logout();
+      //               break;
+      //             default:
+      //           }
+      //         },
+      //         itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+      //           const PopupMenuItem<String>(
+      //             value: 'logout',
+      //             child: Text('Logout'),
+      //           ),
+      //         ],
+      //       ),
+      //     ],
+      //   ),
+      //   backgroundColor: Color(0xfff3f3f3),
+      //   body: Container(
+      //     child: SingleChildScrollView(
+      //       child: Column(
+      //         children: [
+      //           Container(
+      //               height: MediaQuery.of(context).size.height * 0.3, // ignore this, cos I am giving height to the container
+      //               width: MediaQuery.of(context).size.width, // ignore this, cos I am giving width to the container
+      //               decoration: BoxDecoration(
+      //                   image: DecorationImage(
+      //                       fit: BoxFit.cover,
+      //                       colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
+      //                       image: NetworkImage(
+      //                         restaurant.mobileBackground,
+      //                       )
+      //                   )
+      //               ),
+      //               alignment: Alignment.bottomLeft, // This aligns the child of the container
+      //               child: Container(
+      //                 padding: EdgeInsets.all(16),
+      //                 child: Align(
+      //                   alignment: Alignment.bottomLeft,
+      //                   child: Column(
+      //                     mainAxisAlignment: MainAxisAlignment.end,
+      //                     crossAxisAlignment: CrossAxisAlignment.start,
+      //                     children: [
+      //                       Padding(
+      //                         padding: const EdgeInsets.only(top: 8),
+      //                         child: Text(
+      //                           restaurant.name,
+      //                           style: GoogleFonts.poppins(
+      //                             fontSize: 26,
+      //                             fontWeight: FontWeight.bold,
+      //                             color: Colors.white,
+      //                           ),
+      //                           overflow: TextOverflow.ellipsis,
+      //                         ),
+      //                       ),
+      //
+      //                       Padding(
+      //                         padding: const EdgeInsets.only(top: 8),
+      //                         child: Text(
+      //                           restaurant.tags,
+      //                           style: GoogleFonts.poppins(
+      //                             fontSize: 15,
+      //                             fontWeight: FontWeight.normal,
+      //                             color: Colors.white,
+      //                           ),
+      //                           overflow: TextOverflow.ellipsis,
+      //                         ),
+      //                       ),
+      //
+      //                       Padding(
+      //                         padding: const EdgeInsets.only(top: 4),
+      //                         child: Text(
+      //                           restaurant.openingHours,
+      //                           style: GoogleFonts.poppins(
+      //                             fontSize: 15,
+      //                             fontWeight: FontWeight.normal,
+      //                             color: Colors.white,
+      //                           ),
+      //                           overflow: TextOverflow.ellipsis,
+      //                         ),
+      //                       ),
+      //                     ],
+      //                   ),
+      //                 ),
+      //               )
+      //           ),
+      //
+      //           _menuData(res_id),
+      //         ],
+      //       )
+      //     )
+      //   ),
+      // ),
   }
 
   void _logout() async{
@@ -573,7 +740,6 @@ class _MenuState extends State<Menu> {
   }
 
   Widget _items(items) {
-
     return GridView.builder(
       primary: false,
       itemCount: items.length,
@@ -656,13 +822,21 @@ class _MenuState extends State<Menu> {
             ),
           ),
           onTap: () {
-            print(items[index].optionCategory);
             Navigator.push(
                 context,
+                // MaterialPageRoute(
+                //   builder: (context) {
+                //     return MenuItem(
+                //       item: items[index],
+                //       restaurant: restaurant,
+                //     );
+                //   }
+                // )
                 PageTransition(
                   type: PageTransitionType.rightToLeft,
                   child: MenuItem(
-                    categoryItem: items[index],
+                    item: items[index],
+                    restaurant: restaurant,
                   ),
                 )
             );

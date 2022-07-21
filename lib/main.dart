@@ -1,11 +1,16 @@
+import 'package:auth_flutter/providers/cartProvider.dart';
 import 'package:auth_flutter/screens/dashboard.dart';
 import 'package:auth_flutter/screens/login.dart';
 import 'package:auth_flutter/screens/register.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (_) => CartProvider(),
+    child: MyApp()
+  ));
 }
 
 class MyApp extends StatelessWidget {
