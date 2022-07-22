@@ -18,8 +18,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'checkout.dart';
 import 'menu.dart';
 
-
-
 class Dashboard extends StatefulWidget {
   @override
   _DashboardState createState() => _DashboardState();
@@ -30,9 +28,12 @@ class _DashboardState extends State<Dashboard> {
   var restaurants = [];
   var latitude = null;
   var longitude = null;
+  var categoryClicked = '';
 
   Icon customIcon = Icon(Icons.search);
-  Widget customSearchBar = Text('Restaurants', );
+  Widget customSearchBar = Text(
+    'Restaurants',
+  );
 
   void initState() {
     _loadUserData();
@@ -61,54 +62,67 @@ class _DashboardState extends State<Dashboard> {
     var categories = [
       Category(
         name: 'BBQ',
+        value: 'BBQ',
         image: 'assets/images/bbq-01.png',
       ),
       Category(
         name: 'Breakfast',
+        value: 'Breakfast',
         image: 'assets/images/breakfast-01.png',
       ),
       Category(
         name: 'Burgers',
+        value: 'Burgers',
         image: 'assets/images/burgers-01.png',
       ),
       Category(
         name: 'Cafe',
+        value: 'Cafe',
         image: 'assets/images/cafe-01.png',
       ),
       Category(
         name: 'Caribbean',
+        value: 'Caribbean',
         image: 'assets/images/carribean-01.png',
       ),
       Category(
         name: 'Chinese',
+        value: 'Chinese',
         image: 'assets/images/chinese-01.png',
       ),
       Category(
         name: 'Desserts',
+        value: 'Dessert',
         image: 'assets/images/desserts-01.png',
       ),
       Category(
         name: 'FastFood',
+        value: 'Fast Food',
         image: 'assets/images/fastfood-01.png',
       ),
       Category(
         name: 'Healthy',
+        value: 'Healthy',
         image: 'assets/images/healthy-01.png',
       ),
       Category(
         name: 'Japanese',
+        value: 'Japanese',
         image: 'assets/images/japanese-01.png',
       ),
       Category(
         name: 'Kosher',
+        value: 'Kosher',
         image: 'assets/images/kosher-01.png',
       ),
       Category(
         name: 'Vegetarian',
+        value: 'Vegetarian',
         image: 'assets/images/vegetarian-01.png',
       ),
       Category(
         name: 'Vietnamese',
+        value: 'Vietnamese',
         image: 'assets/images/vietnamese-01.png',
       ),
     ];
@@ -152,8 +166,7 @@ class _DashboardState extends State<Dashboard> {
                       ),
                     ),
                   );
-                }
-                else {
+                } else {
                   customIcon = Icon(Icons.search);
                   customSearchBar = Text('Dashboard');
                 }
@@ -161,7 +174,6 @@ class _DashboardState extends State<Dashboard> {
             },
             icon: customIcon,
           ),
-
           Container(
             child: Consumer<CartProvider>(
               builder: (context, model, _) {
@@ -181,8 +193,7 @@ class _DashboardState extends State<Dashboard> {
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
                             child: Checkout(),
-                          )
-                      );
+                          ));
                     },
                     icon: const Icon(Icons.shopping_cart),
                   ),
@@ -190,7 +201,6 @@ class _DashboardState extends State<Dashboard> {
               },
             ),
           ),
-
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert),
             onSelected: (String result) {
@@ -201,8 +211,7 @@ class _DashboardState extends State<Dashboard> {
                 default:
               }
             },
-            itemBuilder: (BuildContext context) =>
-            <PopupMenuEntry<String>>[
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
               const PopupMenuItem<String>(
                 value: 'logout',
                 child: Text('Logout'),
@@ -212,7 +221,6 @@ class _DashboardState extends State<Dashboard> {
         ],
         centerTitle: true,
       ),
-
       body: Padding(
           padding: EdgeInsets.all(8.0),
           child: SingleChildScrollView(
@@ -221,41 +229,48 @@ class _DashboardState extends State<Dashboard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: List.generate(categories.length, (int index) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        // mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Card(
-                            elevation: 0.0,
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Container(
-                              width: MediaQuery.of(context).size.height * 0.15,
-                              child: Image.asset(
-                                categories[index].image,
-                                fit: BoxFit.cover,
+                    height: MediaQuery.of(context).size.height * 0.2,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: List.generate(categories.length, (int index) {
+                        return InkWell(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            // mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Card(
+                                elevation: 0.0,
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.height * 0.15,
+                                  child: Image.asset(
+                                    categories[index].image,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
                               ),
-                            ),
+                              Text(
+                                categories[index].name,
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            categories[index].name,
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      );
-                    }),
-                  )
-                ),
-
+                          onTap: () {
+                            print(categories[index].value);
+                            setState(() {
+                              categoryClicked = categories[index].value;
+                            });
+                          },
+                        );
+                      }),
+                    )),
                 Padding(
                   padding: EdgeInsets.only(
                     left: 10.0,
@@ -269,13 +284,10 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ),
                 ),
-
                 _restaurantData(),
               ],
             ),
-          )
-
-      ),
+          )),
     );
   }
 
@@ -286,10 +298,7 @@ class _DashboardState extends State<Dashboard> {
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       localStorage.remove('user');
       localStorage.remove('token');
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Login())
-      );
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));
     }
   }
 
@@ -305,28 +314,28 @@ class _DashboardState extends State<Dashboard> {
     }
 
     permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
+    // if (permission == LocationPermission.denied) {
+    //   permission = await Geolocator.requestPermission();
+    //   if (permission == LocationPermission.denied) {
+    //     return Future.error('Location permissions are denied');
+    //   }
+    // }
 
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
+    // if (permission == LocationPermission.deniedForever) {
+    //   // Permissions are denied forever, handle appropriately.
+    //   return Future.error(
+    //       'Location permissions are permanently denied, we cannot request permissions.');
+    // }
 
     return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high
-    );
+        desiredAccuracy: LocationAccuracy.high);
   }
 
   FutureBuilder _restaurantData() {
+    print('getting restaurant data...');
     return FutureBuilder<List>(
       future: getRestaurants(),
-      builder: (BuildContext context, AsyncSnapshot<List> snapshot){
+      builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
         if (snapshot.hasData) {
           List? data = snapshot.data;
           return _restaurants(data);
@@ -348,40 +357,38 @@ class _DashboardState extends State<Dashboard> {
     List restaurants = [];
     var res;
     if (latitude != null && longitude != null) {
-      res = await Network().getDataWithoutToken('/restaurants?latitude=$latitude&longitude=$longitude');
-    }
-    else {
-      res = await Network().getDataWithoutToken('/restaurants');
+      res = await Network().getDataWithoutToken(
+          '/restaurants?latitude=$latitude&longitude=$longitude&search=$categoryClicked');
+    } else {
+      res = await Network()
+          .getDataWithoutToken('/restaurants?search=$categoryClicked');
     }
 
     var body = json.decode(res.body);
     var data = body['restaurants']['data'];
     for (var restaurant in data) {
-      restaurants.add(
-          Restaurant(
-            id: restaurant['id'],
-            name: restaurant['name'],
-            image: restaurant['image'],
-            mobileBackground: restaurant['mobile_background'],
-            // description: restaurant['description'],
-            tags: restaurant['tags'],
-            isOpenNow: restaurant['isOpenNow'],
-            orderTypes: restaurant['order_types'],
-            openingHours: restaurant['openingHours'],
-          )
-      );
+      restaurants.add(Restaurant(
+        id: restaurant['id'],
+        name: restaurant['name'],
+        image: restaurant['image'],
+        mobileBackground: restaurant['mobile_background'],
+        // description: restaurant['description'],
+        tags: restaurant['tags'],
+        isOpenNow: restaurant['isOpenNow'],
+        orderTypes: restaurant['order_types'],
+        openingHours: restaurant['openingHours'],
+      ));
     }
     return restaurants;
   }
 
   Widget _restaurants(data) {
-
     return ListView.builder(
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
-        itemCount:data.length,
-        itemBuilder: (context,index){
-          return  InkWell(
+        itemCount: data.length,
+        itemBuilder: (context, index) {
+          return InkWell(
             child: Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5),
@@ -391,7 +398,11 @@ class _DashboardState extends State<Dashboard> {
                 children: [
                   Container(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5), bottomLeft: Radius.circular(0), bottomRight: Radius.circular(0)), //add border radius
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(5),
+                          topRight: Radius.circular(5),
+                          bottomLeft: Radius.circular(0),
+                          bottomRight: Radius.circular(0)), //add border radius
                       child: Image.network(
                         data[index].image,
                         fit: BoxFit.cover,
@@ -410,23 +421,13 @@ class _DashboardState extends State<Dashboard> {
             onTap: () {
               Navigator.push(
                   context,
-                  // MaterialPageRoute(
-                  //     builder: (context) {
-                  //       return Menu(
-                  //         restaurant: data[index],
-                  //       );
-                  //     }
-                  // )
                   PageTransition(
                       type: PageTransitionType.rightToLeft,
                       child: Menu(
                         restaurant: data[index],
-                      )
-                  )
-              );
+                      )));
             },
           );
-        }
-    );
+        });
   }
 }

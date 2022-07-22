@@ -9,13 +9,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class MenuItem extends StatefulWidget {
-
+class MenuCategoryItem extends StatefulWidget {
   CategoryItem item;
   Restaurant restaurant;
-  MenuItem({required this.item, required this.restaurant});
+  MenuCategoryItem({required this.item, required this.restaurant});
 
-  Map<int,OptionCategoryOption?> _singleOptions = {};
+  Map<int, OptionCategoryOption?> _singleOptions = {};
   Map<int, List<OptionCategoryOption>> _multipleOptions = {};
   Map<int, Map<int, int>> _plusMinusOptions = {};
   Map<int, int> map = {};
@@ -24,12 +23,11 @@ class MenuItem extends StatefulWidget {
 
   @override
   _MenuItemState createState() => _MenuItemState(this.item, this.restaurant);
-
 }
 
-class _MenuItemState extends State<MenuItem> {
+class _MenuItemState extends State<MenuCategoryItem> {
   var item, restaurant;
-  Map<int,OptionCategoryOption?> _singleOptions = {};
+  Map<int, OptionCategoryOption?> _singleOptions = {};
   Map<int, List<OptionCategoryOption>> _multipleOptions = {};
   Map<int, Map<OptionCategoryOption, int>> _plusMinusOptions = {};
   int item_count = 1;
@@ -44,13 +42,9 @@ class _MenuItemState extends State<MenuItem> {
       for (var option in category.options) {
         if (!category.isSingle) {
           if (option.maximum > 1) {
-            map.addAll({
-              option: 0
-            });
+            map.addAll({option: 0});
 
-            _plusMinusOptions.addAll({
-              category.id: map
-            });
+            _plusMinusOptions.addAll({category.id: map});
           }
         }
       }
@@ -70,7 +64,7 @@ class _MenuItemState extends State<MenuItem> {
             onSelected: (String result) {
               switch (result) {
                 case 'logout':
-                // _logout();
+                  // _logout();
                   break;
                 default:
               }
@@ -93,7 +87,6 @@ class _MenuItemState extends State<MenuItem> {
               height: MediaQuery.of(context).size.height * 0.30,
               width: MediaQuery.of(context).size.width,
             ),
-
             Container(
               width: MediaQuery.of(context).size.width,
               padding: EdgeInsets.only(top: 6, bottom: 10, left: 16, right: 16),
@@ -109,7 +102,6 @@ class _MenuItemState extends State<MenuItem> {
                       color: Colors.black,
                     ),
                   ),
-
                   Text(
                     item.description,
                     style: GoogleFonts.poppins(
@@ -118,7 +110,6 @@ class _MenuItemState extends State<MenuItem> {
                       color: Colors.black26,
                     ),
                   ),
-
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: Text(
@@ -133,11 +124,7 @@ class _MenuItemState extends State<MenuItem> {
                 ],
               ),
             ),
-
-            Container(
-                child: _optionCategories(item.optionCategory)
-            ),
-
+            Container(child: _optionCategories(item.optionCategory)),
             Container(
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
@@ -158,12 +145,12 @@ class _MenuItemState extends State<MenuItem> {
                 ),
               ),
             ),
-
             Container(
               padding: EdgeInsets.all(10),
               child: TextField(
                 maxLines: 8, //or null
-                decoration: InputDecoration.collapsed(hintText: "Enter your text here"),
+                decoration:
+                    InputDecoration.collapsed(hintText: "Enter your text here"),
                 onChanged: (value) {
                   if (value.length > 0) {
                     setState(() {
@@ -173,7 +160,6 @@ class _MenuItemState extends State<MenuItem> {
                 },
               ),
             ),
-
             Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -193,17 +179,12 @@ class _MenuItemState extends State<MenuItem> {
                               item_count--;
                             });
                           }
-                        }
-                    ),
+                        }),
                   ),
-
                   Padding(
                     padding: const EdgeInsets.only(left: 12, right: 12),
-                    child: Text(
-                        item_count.toString()
-                    ),
+                    child: Text(item_count.toString()),
                   ),
-
                   Ink(
                     decoration: const ShapeDecoration(
                       color: Color(0xffdedede),
@@ -217,13 +198,11 @@ class _MenuItemState extends State<MenuItem> {
                           setState(() {
                             item_count++;
                           });
-                        }
-                    ),
+                        }),
                   ),
                 ],
               ),
             ),
-
             Container(
               padding: EdgeInsets.only(bottom: 20.0),
               // child: _showFloatingButton(item),
@@ -238,12 +217,14 @@ class _MenuItemState extends State<MenuItem> {
                     var res = _checkRequired();
                     if (!res) {
                       showDialog(
-                          barrierDismissible: true,//tapping outside dialog will close the dialog if set 'true'
+                          barrierDismissible:
+                              true, //tapping outside dialog will close the dialog if set 'true'
                           context: context,
-                          builder: (context){
+                          builder: (context) {
                             return AlertDialog(
                               title: const Text('Required Items'),
-                              content: const Text('Some of the required items arent selected or soldout. Please check again.'),
+                              content: const Text(
+                                  'Some of the required items arent selected or soldout. Please check again.'),
                               actions: <Widget>[
                                 // TextButton(
                                 //   onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -255,10 +236,8 @@ class _MenuItemState extends State<MenuItem> {
                                 ),
                               ],
                             );
-                          }
-                      );
-                    }
-                    else {
+                          });
+                    } else {
                       _addToCart();
                     }
                   },
@@ -309,208 +288,263 @@ class _MenuItemState extends State<MenuItem> {
                         subtitle: _isRequired(data[index]),
                       ),
                     ),
-
                     Padding(
-                      padding: EdgeInsets.all(8),
-                      //options
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        primary: false,
-                        itemCount: data[index].options.length,
-                        itemBuilder: (content, index2) {
-                          var option = data[index].options[index2];
-                          var category = data[index];
+                        padding: EdgeInsets.all(8),
+                        //options
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            primary: false,
+                            itemCount: data[index].options.length,
+                            itemBuilder: (content, index2) {
+                              var option = data[index].options[index2];
+                              var category = data[index];
 
-                          if (data[index].isSingle) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  width: MediaQuery.of(context).size.width * 0.70,
-                                  child: RadioListTile<OptionCategoryOption>(
-                                    title: Text(option.name),
-                                    value: option,
-                                    activeColor: Color(0xff7c4ad9),
-                                    groupValue: _singleOptions[category.id],
-                                    onChanged: (OptionCategoryOption? value) {
-                                      setState(() {
-                                        _singleOptions.addAll(
-                                          {category.id: value}
-                                        );
-                                      });
-                                      print(_singleOptions);
-                                    },
-                                  ),
-                                ),
-
-                                Container(
-                                  child: _showOptionPrice(option),
-                                ),
-                              ],
-                            );
-                          }
-                          else {
-                            if (option.maximum == 1) {
-                              return Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width * 0.70,
-                                    child: CheckboxListTile(
-                                      title: Text(option.name),
-                                      value: (_multipleOptions[category.id] == null) ? false : _multipleOptions[category.id]!.contains(option),
-                                      // value: (_multipleOptions[category.id] != null) ? (_multipleOptions[category.id]!.length == category.max || _multipleOptions[category.id]!.contains(option)) : false,
-                                      // value: (_multipleOptions[category.id] == null) ? false : (_multipleOptions[category.id]!.length == category.max) ? false : _multipleOptions[category.id]!.contains(option),
-                                      controlAffinity: ListTileControlAffinity.leading,
-                                      activeColor: Color(0xff7c4ad9),
-                                      onChanged: (bool? value) {
-                                        var list = _multipleOptions[category.id];
-                                        if (value == true) {
-                                          if (list != null) {
-                                            if (list.length >= category.max) {
-                                              showDialog(
-                                                barrierDismissible: true,//tapping outside dialog will close the dialog if set 'true'
-                                                context: context,
-                                                builder: (context){
-                                                  return AlertDialog(
-                                                    title: const Text('Maximum Items Reached'),
-                                                    content: const Text('Maximum options has been selected for this category.'),
-                                                    actions: <Widget>[
-                                                      // TextButton(
-                                                      //   onPressed: () => Navigator.pop(context, 'Cancel'),
-                                                      //   child: const Text('Cancel'),
-                                                      // ),
-                                                      TextButton(
-                                                        onPressed: () => Navigator.pop(context, 'OK'),
-                                                        child: const Text('OK'),
-                                                      ),
-                                                    ],
-                                                  );
-                                                }
-                                              );
-
-                                              // _showAlert();
-                                            }
-                                            else {
-                                              list.add(option);
-                                              setState(() {
-                                                _multipleOptions.addAll({
-                                                  category.id: list
-                                                });
-                                              });
-                                            }
-                                          }
-                                          else {
-                                            List<OptionCategoryOption> newList = [option];
-                                            setState(() {
-                                              _multipleOptions.addAll({
-                                                category.id: newList
-                                              });
-                                            });
-                                          }
-                                        }
-                                        else {
-                                          if (_multipleOptions[category.id]!.length <= category.max) {
-                                            setState(() {
-                                              _multipleOptions[category.id]!.remove(option);
-                                              if (_multipleOptions[category.id]!.length == 0) {
-                                                _multipleOptions.remove(category.id);
-                                              }
-                                            });
-                                          }
-                                        }
-
-                                        print(_multipleOptions);
-                                      },
+                              if (data[index].isSingle) {
+                                return Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.70,
+                                      child:
+                                          RadioListTile<OptionCategoryOption>(
+                                        title: Text(option.name),
+                                        value: option,
+                                        activeColor: Color(0xff7c4ad9),
+                                        groupValue: _singleOptions[category.id],
+                                        onChanged:
+                                            (OptionCategoryOption? value) {
+                                          setState(() {
+                                            _singleOptions
+                                                .addAll({category.id: value});
+                                          });
+                                          print(_singleOptions);
+                                        },
+                                      ),
                                     ),
-                                  ),
-
-                                  Container(
-                                    child: _showOptionPrice(option),
-                                  ),
-                                ],
-                              );
-                            }
-                            else {
-                              // return Text('plus minus option');
-
-                              return Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
                                     Row(
                                       children: [
-                                        Ink(
-                                          decoration: const ShapeDecoration(
-                                            color: Color(0xffdedede),
-                                            shape: CircleBorder(),
-                                          ),
-                                          width: 40,
-                                          height: 40,
-                                          child: IconButton(
-                                              icon: Icon(Icons.remove, size: 18),
-                                              onPressed: () {
-                                                var count = _plusMinusOptions[category.id]![option];
-                                                if (count! >= 1) {
-                                                  setState(() {
-                                                    _plusMinusOptions[category.id]![option] = (_plusMinusOptions[category.id]![option]! - 1);
-                                                  });
-
-                                                }
-                                              }
-                                          ),
+                                        Container(
+                                          child: _showSoldOut(option),
                                         ),
-
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 12, right: 12),
-                                          child: Text(
-                                            _plusMinusOptions[data[index].id]![option].toString(),
-                                          ),
-                                        ),
-
-                                        Ink(
-                                          decoration: const ShapeDecoration(
-                                            color: Color(0xffdedede),
-                                            shape: CircleBorder(),
-                                          ),
-                                          width: 40,
-                                          height: 40,
-                                          child: IconButton(
-                                              icon: Icon(Icons.add, size: 18),
-                                              onPressed: () {
-                                                var count = _plusMinusOptions[category.id]![option];
-                                                if (count! < option.maximum) {
-                                                  setState(() {
-                                                    _plusMinusOptions[category.id]![option] = (_plusMinusOptions[category.id]![option]! + 1);
-                                                  });
-                                                }
-                                                print(_plusMinusOptions);
-                                              }
-                                          ),
+                                        Container(
+                                          child: _showOptionPrice(option),
                                         ),
                                       ],
                                     ),
-
-                                    Container(
-                                      child: _showOptionPrice(option),
-                                    ),
                                   ],
-                                ),
-                              );
-                            }
-                          }
-                        }
-                      )
-                    )
+                                );
+                              } else {
+                                if (option.maximum == 1) {
+                                  return Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.50,
+                                        child: CheckboxListTile(
+                                          title: Text(option.name),
+                                          value: (_multipleOptions[
+                                                      category.id] ==
+                                                  null)
+                                              ? false
+                                              : _multipleOptions[category.id]!
+                                                  .contains(option),
+                                          // (_multipleOptions[category.id]!.contains(option) ? option.soldout),
+                                          controlAffinity:
+                                              ListTileControlAffinity.leading,
+                                          activeColor: Color(0xff7c4ad9),
+                                          onChanged: (bool? value) {
+                                            var list =
+                                                _multipleOptions[category.id];
+                                            if (value == true) {
+                                              if (list != null) {
+                                                if (list.length >=
+                                                    category.max) {
+                                                  showDialog(
+                                                      barrierDismissible:
+                                                          true, //tapping outside dialog will close the dialog if set 'true'
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return AlertDialog(
+                                                          title: const Text(
+                                                              'Maximum Items Reached'),
+                                                          content: const Text(
+                                                              'Maximum options has been selected for this category.'),
+                                                          actions: <Widget>[
+                                                            // TextButton(
+                                                            //   onPressed: () => Navigator.pop(context, 'Cancel'),
+                                                            //   child: const Text('Cancel'),
+                                                            // ),
+                                                            TextButton(
+                                                              onPressed: () =>
+                                                                  Navigator.pop(
+                                                                      context,
+                                                                      'OK'),
+                                                              child: const Text(
+                                                                  'OK'),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      });
+
+                                                  // _showAlert();
+                                                } else {
+                                                  list.add(option);
+                                                  setState(() {
+                                                    _multipleOptions.addAll(
+                                                        {category.id: list});
+                                                  });
+                                                }
+                                              } else {
+                                                List<OptionCategoryOption>
+                                                    newList = [option];
+                                                setState(() {
+                                                  _multipleOptions.addAll(
+                                                      {category.id: newList});
+                                                });
+                                              }
+                                            } else if (value == false) {
+                                              if (_multipleOptions[category.id]!
+                                                      .length <=
+                                                  category.max) {
+                                                setState(() {
+                                                  _multipleOptions[category.id]!
+                                                      .remove(option);
+                                                  if (_multipleOptions[
+                                                              category.id]!
+                                                          .length ==
+                                                      0) {
+                                                    _multipleOptions
+                                                        .remove(category.id);
+                                                  }
+                                                });
+                                              }
+                                            }
+
+                                            print(_multipleOptions);
+                                          },
+                                        ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            child: _showSoldOut(option),
+                                          ),
+                                          Container(
+                                            child: _showOptionPrice(option),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                } else {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Row(
+                                          children: [
+                                            Ink(
+                                              decoration: const ShapeDecoration(
+                                                color: Color(0xffdedede),
+                                                shape: CircleBorder(),
+                                              ),
+                                              width: 40,
+                                              height: 40,
+                                              child: IconButton(
+                                                  icon: Icon(Icons.remove,
+                                                      size: 18),
+                                                  onPressed: () {
+                                                    var count =
+                                                        _plusMinusOptions[
+                                                            category
+                                                                .id]![option];
+                                                    if (count! >= 1) {
+                                                      setState(() {
+                                                        _plusMinusOptions[
+                                                                    category
+                                                                        .id]![
+                                                                option] =
+                                                            (_plusMinusOptions[
+                                                                        category
+                                                                            .id]![
+                                                                    option]! -
+                                                                1);
+                                                      });
+                                                    }
+                                                  }),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 12, right: 12),
+                                              child: Text(
+                                                _plusMinusOptions[
+                                                        data[index].id]![option]
+                                                    .toString(),
+                                              ),
+                                            ),
+                                            Ink(
+                                              decoration: const ShapeDecoration(
+                                                color: Color(0xffdedede),
+                                                shape: CircleBorder(),
+                                              ),
+                                              width: 40,
+                                              height: 40,
+                                              child: IconButton(
+                                                  icon:
+                                                      Icon(Icons.add, size: 18),
+                                                  onPressed: () {
+                                                    var count =
+                                                        _plusMinusOptions[
+                                                            category
+                                                                .id]![option];
+                                                    if (count! <
+                                                        option.maximum) {
+                                                      setState(() {
+                                                        _plusMinusOptions[
+                                                                    category
+                                                                        .id]![
+                                                                option] =
+                                                            (_plusMinusOptions[
+                                                                        category
+                                                                            .id]![
+                                                                    option]! +
+                                                                1);
+                                                      });
+                                                    }
+                                                    print(_plusMinusOptions);
+                                                  }),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              child: _showSoldOut(option),
+                                            ),
+                                            Container(
+                                              child: _showOptionPrice(option),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                              }
+                            }))
                   ],
                 )
               ],
             );
-          }
-      );
-    }
-    else {
+          });
+    } else {
       return Text('');
     }
   }
@@ -520,13 +554,37 @@ class _MenuItemState extends State<MenuItem> {
       return Text(
         '+ \$ ' + option.price,
         style: GoogleFonts.poppins(
-          fontSize: 15,
+          fontSize: 13,
           fontWeight: FontWeight.normal,
           color: Colors.black45,
         ),
       );
+    } else {
+      return Text('');
     }
-    else {
+  }
+
+  _showSoldOut(option) {
+    if (option.soldout) {
+      return Container(
+        padding: EdgeInsets.only(right: 7),
+        child: Container(
+          padding: EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade200,
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: Text(
+            'SOLD OUT',
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              fontWeight: FontWeight.normal,
+              color: Colors.black45,
+            ),
+          ),
+        ),
+      );
+    } else {
       return Text('');
     }
   }
@@ -556,8 +614,7 @@ class _MenuItemState extends State<MenuItem> {
           )
         ],
       );
-    }
-    else {
+    } else {
       return Row(
         children: [
           Text(
@@ -568,7 +625,6 @@ class _MenuItemState extends State<MenuItem> {
               color: Colors.black,
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.only(left: 10.0),
             child: Text(
@@ -724,6 +780,10 @@ class _MenuItemState extends State<MenuItem> {
     print('doubleOptionsPrice $doubleOptionsPrice');
     print('plusMinusOptionsPrice $plusMinusOptionsPrice');
 
-    return (double.parse(item.price) + singleOptionsPrice + doubleOptionsPrice + plusMinusOptionsPrice) * item_count;
+    return (double.parse(item.price) +
+            singleOptionsPrice +
+            doubleOptionsPrice +
+            plusMinusOptionsPrice) *
+        item_count;
   }
 }

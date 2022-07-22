@@ -838,7 +838,7 @@ class _MenuState extends State<Menu> {
                 // )
                 PageTransition(
                   type: PageTransitionType.rightToLeft,
-                  child: MenuItem(
+                  child: MenuCategoryItem(
                     item: items[index],
                     restaurant: restaurant,
                   ),

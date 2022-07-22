@@ -14,45 +14,34 @@ class Network {
     token = jsonDecode(localStorage.getString('token'));
   }
 
-  authData(data, apiUrl) async{
+  authData(data, apiUrl) async {
     var fullUrl = _url + apiUrl;
-    return await http.post(
-        fullUrl,
-        body: jsonEncode(data),
-        headers: _setHeaders()
-    );
+    return await http.post(fullUrl,
+        body: jsonEncode(data), headers: _setHeaders());
   }
 
   getData(apiUrl) async {
     var fullUrl = _url + apiUrl;
     await _getToken();
-    return await http.get(
-        fullUrl,
-        headers: _setHeaders()
-    );
+    return await http.get(fullUrl, headers: _setHeaders());
   }
 
   _setHeaders() => {
-    'Content-type' : 'application/json',
-    'Accept' : 'application/json',
-    'Authorization' : 'Bearer $token'
-  };
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token'
+      };
 
   getDataWithoutToken(apiUrl) async {
+    print(apiUrl);
     var fullUrl = _url + apiUrl;
-    return await http.get(
-        fullUrl,
-        headers: _setHeadersWithoutToken()
-    );
+    return await http.get(fullUrl, headers: _setHeadersWithoutToken());
   }
 
   _setHeadersWithoutToken() => {
-    'Content-type' : 'application/json',
-    'Accept' : 'application/json',
-    'Access-Control-Allow-Origin' : 'http://taliup-express.test',
-    'Access-Control-Allow-Methods' : 'POST, GET, OPTIONS, DELETE',
-  };
-
-
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+        'Access-Control-Allow-Origin': 'http://taliup-express.test',
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE',
+      };
 }
-
