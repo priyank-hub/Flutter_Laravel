@@ -325,89 +325,113 @@ class _MenuItemState extends State<MenuItem> {
                           var category = data[index];
 
                           if (data[index].isSingle) {
-                            return RadioListTile<OptionCategoryOption>(
-                              title: Text(option.name),
-                              value: option,
-                              activeColor: Color(0xff7c4ad9),
-                              groupValue: _singleOptions[category.id],
-                              onChanged: (OptionCategoryOption? value) {
-                                setState(() {
-                                  _singleOptions.addAll(
-                                    {category.id: value}
-                                  );
-                                });
-                                print(_singleOptions);
-                              },
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  width: MediaQuery.of(context).size.width * 0.70,
+                                  child: RadioListTile<OptionCategoryOption>(
+                                    title: Text(option.name),
+                                    value: option,
+                                    activeColor: Color(0xff7c4ad9),
+                                    groupValue: _singleOptions[category.id],
+                                    onChanged: (OptionCategoryOption? value) {
+                                      setState(() {
+                                        _singleOptions.addAll(
+                                          {category.id: value}
+                                        );
+                                      });
+                                      print(_singleOptions);
+                                    },
+                                  ),
+                                ),
+
+                                Container(
+                                  child: _showOptionPrice(option),
+                                ),
+                              ],
                             );
                           }
                           else {
                             if (option.maximum == 1) {
-                              return CheckboxListTile(
-                                title: Text(option.name),
-                                value: (_multipleOptions[category.id] == null) ? false : _multipleOptions[category.id]!.contains(option),
-                                // value: (_multipleOptions[category.id] != null) ? (_multipleOptions[category.id]!.length == category.max || _multipleOptions[category.id]!.contains(option)) : false,
-                                // value: (_multipleOptions[category.id] == null) ? false : (_multipleOptions[category.id]!.length == category.max) ? false : _multipleOptions[category.id]!.contains(option),
-                                controlAffinity: ListTileControlAffinity.leading,
-                                activeColor: Color(0xff7c4ad9),
-                                onChanged: (bool? value) {
-                                  var list = _multipleOptions[category.id];
-                                  if (value == true) {
-                                    if (list != null) {
-                                      if (list.length >= category.max) {
-                                        showDialog(
-                                          barrierDismissible: true,//tapping outside dialog will close the dialog if set 'true'
-                                          context: context,
-                                          builder: (context){
-                                            return AlertDialog(
-                                              title: const Text('Maximum Items Reached'),
-                                              content: const Text('Maximum options has been selected for this category.'),
-                                              actions: <Widget>[
-                                                // TextButton(
-                                                //   onPressed: () => Navigator.pop(context, 'Cancel'),
-                                                //   child: const Text('Cancel'),
-                                                // ),
-                                                TextButton(
-                                                  onPressed: () => Navigator.pop(context, 'OK'),
-                                                  child: const Text('OK'),
-                                                ),
-                                              ],
-                                            );
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    width: MediaQuery.of(context).size.width * 0.70,
+                                    child: CheckboxListTile(
+                                      title: Text(option.name),
+                                      value: (_multipleOptions[category.id] == null) ? false : _multipleOptions[category.id]!.contains(option),
+                                      // value: (_multipleOptions[category.id] != null) ? (_multipleOptions[category.id]!.length == category.max || _multipleOptions[category.id]!.contains(option)) : false,
+                                      // value: (_multipleOptions[category.id] == null) ? false : (_multipleOptions[category.id]!.length == category.max) ? false : _multipleOptions[category.id]!.contains(option),
+                                      controlAffinity: ListTileControlAffinity.leading,
+                                      activeColor: Color(0xff7c4ad9),
+                                      onChanged: (bool? value) {
+                                        var list = _multipleOptions[category.id];
+                                        if (value == true) {
+                                          if (list != null) {
+                                            if (list.length >= category.max) {
+                                              showDialog(
+                                                barrierDismissible: true,//tapping outside dialog will close the dialog if set 'true'
+                                                context: context,
+                                                builder: (context){
+                                                  return AlertDialog(
+                                                    title: const Text('Maximum Items Reached'),
+                                                    content: const Text('Maximum options has been selected for this category.'),
+                                                    actions: <Widget>[
+                                                      // TextButton(
+                                                      //   onPressed: () => Navigator.pop(context, 'Cancel'),
+                                                      //   child: const Text('Cancel'),
+                                                      // ),
+                                                      TextButton(
+                                                        onPressed: () => Navigator.pop(context, 'OK'),
+                                                        child: const Text('OK'),
+                                                      ),
+                                                    ],
+                                                  );
+                                                }
+                                              );
+
+                                              // _showAlert();
+                                            }
+                                            else {
+                                              list.add(option);
+                                              setState(() {
+                                                _multipleOptions.addAll({
+                                                  category.id: list
+                                                });
+                                              });
+                                            }
                                           }
-                                        );
-
-                                        // _showAlert();
-                                      }
-                                      else {
-                                        list.add(option);
-                                        setState(() {
-                                          _multipleOptions.addAll({
-                                            category.id: list
-                                          });
-                                        });
-                                      }
-                                    }
-                                    else {
-                                      List<OptionCategoryOption> newList = [option];
-                                      setState(() {
-                                        _multipleOptions.addAll({
-                                          category.id: newList
-                                        });
-                                      });
-                                    }
-                                  }
-                                  else {
-                                    if (_multipleOptions[category.id]!.length <= category.max) {
-                                      setState(() {
-                                        _multipleOptions[category.id]!.remove(option);
-                                        if (_multipleOptions[category.id]!.length == 0) {
-                                          _multipleOptions.remove(category.id);
+                                          else {
+                                            List<OptionCategoryOption> newList = [option];
+                                            setState(() {
+                                              _multipleOptions.addAll({
+                                                category.id: newList
+                                              });
+                                            });
+                                          }
                                         }
-                                      });
-                                    }
-                                  }
+                                        else {
+                                          if (_multipleOptions[category.id]!.length <= category.max) {
+                                            setState(() {
+                                              _multipleOptions[category.id]!.remove(option);
+                                              if (_multipleOptions[category.id]!.length == 0) {
+                                                _multipleOptions.remove(category.id);
+                                              }
+                                            });
+                                          }
+                                        }
 
-                                  print(_multipleOptions);
-                                },
+                                        print(_multipleOptions);
+                                      },
+                                    ),
+                                  ),
+
+                                  Container(
+                                    child: _showOptionPrice(option),
+                                  ),
+                                ],
                               );
                             }
                             else {
@@ -495,7 +519,7 @@ class _MenuItemState extends State<MenuItem> {
   }
 
   _showOptionPrice(option) {
-    if (double.parse(option.price) != 0) {
+    if (option.price != null && double.parse(option.price) != 0) {
       return Text(
         '+ \$ ' + option.price,
         style: GoogleFonts.poppins(
@@ -586,10 +610,6 @@ class _MenuItemState extends State<MenuItem> {
             if (zeroCount == _allOptions[category.id].length) {
               flag = false;
             }
-
-            if (_allOptions[category.id][option].soldout) {
-              flag = false;
-            }
           }
         }
 
@@ -597,23 +617,39 @@ class _MenuItemState extends State<MenuItem> {
           flag = false;
         }
       }
-
-      if (!category.isSingle) {
-        for (var opt in _allOptions[category.id]) {
-          if (opt.soldout) {
-            flag = false;
-          }
-        }
-      }
-      else {
-        if (_allOptions[category.id] != null) {
-          print('========');
-          if (_allOptions[category.id].soldout) {
-            flag = false;
-          }
-        }
-      }
     }
+    return flag && _checkSoldout();
+  }
+
+  bool _checkSoldout() {
+    var _allOptions = {};
+    bool flag = true;
+    _allOptions.addAll(_singleOptions);
+    _allOptions.addAll(_multipleOptions);
+    _allOptions.addAll(_plusMinusOptions);
+
+    _singleOptions.forEach((key, value) {
+      if (value!.soldout) {
+        flag = false;
+      }
+    });
+
+    _multipleOptions.forEach((key, value) {
+      value.forEach((element) {
+        if (element.soldout) {
+          flag = false;
+        }
+      });
+    });
+
+    _plusMinusOptions.forEach((key, value) {
+      value.forEach((key, value) {
+        if (key.soldout) {
+          flag = false;
+        }
+      });
+    });
+
     return flag;
   }
 
