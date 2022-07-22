@@ -1,11 +1,8 @@
-import 'dart:convert';
-
 import 'package:auth_flutter/models/cart.dart';
 import 'package:auth_flutter/models/categoryItem.dart';
 import 'package:auth_flutter/models/optionCategoryOption.dart';
 import 'package:auth_flutter/models/restaurant.dart';
 import 'package:auth_flutter/providers/cartProvider.dart';
-import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -693,7 +690,7 @@ class _MenuItemState extends State<MenuItem> {
       double sum = 0.0;
       _singleOptions.forEach((key, value) {
         if (value!.price != null) {
-          sum = sum + double.parse(value!.price);
+          sum = sum + double.parse(value.price);
         }
       });
       singleOptionsPrice = sum;

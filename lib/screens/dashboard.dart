@@ -9,6 +9,7 @@ import 'package:auth_flutter/providers/cartProvider.dart';
 import 'package:auth_flutter/screens/login.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,12 +28,16 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   var name;
   var restaurants = [];
+  var latitude = null;
+  var longitude = null;
 
   Icon customIcon = Icon(Icons.search);
   Widget customSearchBar = Text('Restaurants', );
 
   void initState() {
     _loadUserData();
+
+    // _loadUserPosition();
     // _getRestaurants();
     super.initState();
   }
@@ -115,22 +120,6 @@ class _DashboardState extends State<Dashboard> {
         backgroundColor: Color(0xff7c4ad9),
         elevation: 10,
         actions: <Widget>[
-          // IconButton(
-          //   icon: Icon(
-          //     Icons.person,
-          //     color: Colors.white,
-          //   ),
-          //   onPressed: () {
-          //     Navigator.push(
-          //         context,
-          //         PageTransition(
-          //             type: PageTransitionType.rightToLeft,
-          //             child: Profile(),
-          //         )
-          //     );
-          //   },
-          // ),
-
           IconButton(
             onPressed: () {
               setState(() {
@@ -303,99 +292,141 @@ class _DashboardState extends State<Dashboard> {
       );
     }
   }
-}
 
-FutureBuilder _restaurantData(){
-  return FutureBuilder<List>(
-    future: getRestaurants(),
-    builder: (BuildContext context, AsyncSnapshot<List> snapshot){
-      if (snapshot.hasData) {
-        List? data = snapshot.data;
-        return _restaurants(data);
-      } else if (snapshot.hasError) {
-        return Text("${snapshot.error}");
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    print('service enabled $serviceEnabled');
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
       }
-      return Center(child: CircularProgressIndicator());
-    },
-  );
-}
+    }
 
-Future<List> getRestaurants() async {
-  print('getting restaurants...');
-  List restaurants = [];
-  var res = await Network().getDataWithoutToken('/restaurants');
-  var body = json.decode(res.body);
-  var data = body['restaurants']['data'];
-  for (var restaurant in data) {
-    restaurants.add(
-        Restaurant(
-          id: restaurant['id'],
-          name: restaurant['name'],
-          image: restaurant['image'],
-          mobileBackground: restaurant['mobile_background'],
-          // description: restaurant['description'],
-          tags: restaurant['tags'],
-          isOpenNow: restaurant['isOpenNow'],
-          orderTypes: restaurant['order_types'],
-          openingHours: restaurant['openingHours'],
-        )
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high
     );
   }
-  return restaurants;
-}
 
-Widget _restaurants(data) {
+  FutureBuilder _restaurantData() {
+    return FutureBuilder<List>(
+      future: getRestaurants(),
+      builder: (BuildContext context, AsyncSnapshot<List> snapshot){
+        if (snapshot.hasData) {
+          List? data = snapshot.data;
+          return _restaurants(data);
+        } else if (snapshot.hasError) {
+          return Text("${snapshot.error}");
+        }
+        return Center(child: CircularProgressIndicator());
+      },
+    );
+  }
 
-  return ListView.builder(
-    physics: NeverScrollableScrollPhysics(),
-    shrinkWrap: true,
-    itemCount:data.length,
-    itemBuilder: (context,index){
-      return  InkWell(
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-          ),
-          elevation: 0.0,
-          child: Column(
-            children: [
-              Container(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5), bottomLeft: Radius.circular(0), bottomRight: Radius.circular(0)), //add border radius
-                  child: Image.network(
-                    data[index].image,
-                    fit: BoxFit.cover,
-                    height: MediaQuery.of(context).size.height * 0.25,
-                    width: MediaQuery.of(context).size.width,
-                  ),
-                ),
-              ),
-              ListTile(
-                title: Text(data[index].name),
-                subtitle: Text(data[index].tags),
-              )
-            ],
-          ),
-        ),
-        onTap: () {
-          Navigator.push(
-              context,
-              // MaterialPageRoute(
-              //     builder: (context) {
-              //       return Menu(
-              //         restaurant: data[index],
-              //       );
-              //     }
-              // )
-              PageTransition(
-                  type: PageTransitionType.rightToLeft,
-                  child: Menu(
-                    restaurant: data[index],
-                  )
-              )
-          );
-        },
+  Future<List> getRestaurants() async {
+    print('getting restaurants...');
+
+    Position currentLocation = await _determinePosition();
+    latitude = currentLocation.latitude;
+    longitude = currentLocation.longitude;
+
+    List restaurants = [];
+    var res;
+    if (latitude != null && longitude != null) {
+      res = await Network().getDataWithoutToken('/restaurants?latitude=$latitude&longitude=$longitude');
+    }
+    else {
+      res = await Network().getDataWithoutToken('/restaurants');
+    }
+
+    var body = json.decode(res.body);
+    var data = body['restaurants']['data'];
+    for (var restaurant in data) {
+      restaurants.add(
+          Restaurant(
+            id: restaurant['id'],
+            name: restaurant['name'],
+            image: restaurant['image'],
+            mobileBackground: restaurant['mobile_background'],
+            // description: restaurant['description'],
+            tags: restaurant['tags'],
+            isOpenNow: restaurant['isOpenNow'],
+            orderTypes: restaurant['order_types'],
+            openingHours: restaurant['openingHours'],
+          )
       );
     }
-  );
+    return restaurants;
+  }
+
+  Widget _restaurants(data) {
+
+    return ListView.builder(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount:data.length,
+        itemBuilder: (context,index){
+          return  InkWell(
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              elevation: 0.0,
+              child: Column(
+                children: [
+                  Container(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5), bottomLeft: Radius.circular(0), bottomRight: Radius.circular(0)), //add border radius
+                      child: Image.network(
+                        data[index].image,
+                        fit: BoxFit.cover,
+                        height: MediaQuery.of(context).size.height * 0.25,
+                        width: MediaQuery.of(context).size.width,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    title: Text(data[index].name),
+                    subtitle: Text(data[index].tags),
+                  )
+                ],
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  // MaterialPageRoute(
+                  //     builder: (context) {
+                  //       return Menu(
+                  //         restaurant: data[index],
+                  //       );
+                  //     }
+                  // )
+                  PageTransition(
+                      type: PageTransitionType.rightToLeft,
+                      child: Menu(
+                        restaurant: data[index],
+                      )
+                  )
+              );
+            },
+          );
+        }
+    );
+  }
 }

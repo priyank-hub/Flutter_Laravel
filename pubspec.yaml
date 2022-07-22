@@ -37,6 +37,7 @@ dependencies:
   liquid_ui: ^1.0.0
   badges: ^2.0.2
   provider: ^6.0.3
+  geolocator: ^6.2.1
 
 dev_dependencies:
   flutter_test:
