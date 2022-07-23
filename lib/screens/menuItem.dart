@@ -301,23 +301,18 @@ class _MenuItemState extends State<MenuCategoryItem> {
 
                               if (data[index].isSingle) {
                                 return Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.70,
-                                      child:
-                                          RadioListTile<OptionCategoryOption>(
-                                        title: Text(option.name),
+                                      width: MediaQuery.of(context).size.width * 0.60,
+                                      child: RadioListTile<OptionCategoryOption>(
+                                        title: Text(option.name, overflow: TextOverflow.ellipsis),
                                         value: option,
                                         activeColor: Color(0xff7c4ad9),
                                         groupValue: _singleOptions[category.id],
-                                        onChanged:
-                                            (OptionCategoryOption? value) {
+                                        onChanged: (OptionCategoryOption? value) {
                                           setState(() {
-                                            _singleOptions
-                                                .addAll({category.id: value});
+                                            _singleOptions.addAll({category.id: value});
                                           });
                                           print(_singleOptions);
                                         },

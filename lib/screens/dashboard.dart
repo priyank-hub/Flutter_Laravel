@@ -125,6 +125,11 @@ class _DashboardState extends State<Dashboard> {
         value: 'Vietnamese',
         image: 'assets/images/vietnamese-01.png',
       ),
+      Category(
+        name: 'All',
+        value: '',
+        image: 'assets/images/vietnamese-01.png',
+      ),
     ];
 
     return Scaffold(

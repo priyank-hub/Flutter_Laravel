@@ -58,49 +58,63 @@ class _CheckoutState extends State<Checkout> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Padding(
-                padding: EdgeInsets.all(10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10.0), //add border radius
-                      child: Image.network(
-                        cart[index].itemImage,
-                        fit: BoxFit.cover,
-                        width: MediaQuery.of(context).size.height * 0.12,
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10.0), //add border radius
+                        child: Image.network(
+                          cart[index].itemImage,
+                          fit: BoxFit.cover,
+                          width: MediaQuery.of(context).size.width * 0.20,
+                        ),
                       ),
-                    ),
 
-                    Container(
-                      padding: EdgeInsets.only(left: 10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            cart[index].itemName,
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                      Container(
+                        padding: EdgeInsets.only(left: 10),
+                        width: MediaQuery.of(context).size.width * 0.68,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                  cart[index].itemName,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
 
-                          Text(
-                            '\$ ' + cart[index].charge.toString(),
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black45,
+                                Container(
+                                  child: _renderOptions(cart[index]),
+                                ),
+                              ],
                             ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+
+                            Container(
+                              child: Text(
+                                '\$ ' + cart[index].charge.toString(),
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black45,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             );
@@ -109,6 +123,10 @@ class _CheckoutState extends State<Checkout> {
       ),
       // floatingActionButton: _showFloatingButton(),
     );
+  }
+
+  _renderOptions(cart) {
+    print(cart.optionCategories);
   }
 
 }

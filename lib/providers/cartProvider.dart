@@ -17,7 +17,7 @@ class CartProvider with ChangeNotifier {
   List<Cart> cart = [];
 
   List<Cart> getItems() {
-    notifyListeners();
+//    notifyListeners();
     return cart;
   }
 
